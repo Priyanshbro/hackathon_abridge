@@ -154,110 +154,6 @@
    "plan_verbs": null
   }
  ],
- "3a3a1f26-ed23-f65c-a7df-c96fac56f464": [
-  {
-   "id": "llm-0-undertreated_condition",
-   "topic": "migraine|prophylaxis|preventive|prevention|chronic",
-   "kind": "gap",
-   "trigger": "Chronic intractable migraine with ~2 disabling attacks weekly, but no migraine preventive (prophylactic) therapy offered or discussed",
-   "evidence": [
-    {
-     "source": "llm_discovery",
-     "field": "undertreated_condition",
-     "value": "Patient reports 'about two bad ones a week,' misses/pushes through work, relieved only by sleep in a dark room; plan lists only a headache log and return precautions, with abortive meds 'for when a headache gets really bad' as the sole treatment"
-    }
-   ],
-   "priority": 0.9,
-   "resolved_by": null,
-   "verifiable_from_record": true,
-   "plan_verbs": null
-  },
-  {
-   "id": "llm-1-uninvestigated_symptom",
-   "topic": "medication overuse|rebound|abortive|analgesic|migraine",
-   "kind": "gap",
-   "trigger": "Risk of medication-overuse headache not addressed given use of abortive/acute headache medication roughly twice weekly in a chronic migraine pattern",
-   "evidence": [
-    {
-     "source": "llm_discovery",
-     "field": "uninvestigated_symptom",
-     "value": "Patient keeps 'stuff for when a headache gets really bad' and has ~2 significant attacks/week; note reconciles meds but does not assess acute-med frequency or counsel on overuse"
-    }
-   ],
-   "priority": 0.6,
-   "resolved_by": null,
-   "verifiable_from_record": false,
-   "plan_verbs": null
-  },
-  {
-   "id": "llm-2-specialist_referral_gap",
-   "topic": "neurology|referral|intractable|migraine|refractory",
-   "kind": "gap",
-   "trigger": "Diagnosis labeled 'chronic intractable migraine' yet no neurology referral for refractory headache",
-   "evidence": [
-    {
-     "source": "llm_discovery",
-     "field": "specialist_referral_gap",
-     "value": "Active condition 'Chronic intractable migraine without aura'; plan keeps management in primary care with a log only, no specialist referral documented"
-    }
-   ],
-   "priority": 0.6,
-   "resolved_by": null,
-   "verifiable_from_record": false,
-   "plan_verbs": null
-  },
-  {
-   "id": "llm-3-depression_screening_gap",
-   "topic": "depression|PHQ|mood|screening",
-   "kind": "preventive",
-   "trigger": "No formal depression screening (e.g., PHQ-2/PHQ-9) despite multiple depression risk factors",
-   "evidence": [
-    {
-     "source": "llm_discovery",
-     "field": "depression_screening_gap",
-     "value": "Patient reports persistent fatigue, evening 'flatness,' short sleep (5-6h), significant financial stress, and new social isolation; only an informal verbal question about hopelessness was asked"
-    }
-   ],
-   "priority": 0.6,
-   "resolved_by": null,
-   "verifiable_from_record": true,
-   "plan_verbs": null
-  },
-  {
-   "id": "llm-4-uninvestigated_symptom",
-   "topic": "fatigue|tiredness|workup|thyroid|anemia",
-   "kind": "gap",
-   "trigger": "Persistent fatigue reported but not evaluated with any workup",
-   "evidence": [
-    {
-     "source": "llm_discovery",
-     "field": "uninvestigated_symptom",
-     "value": "Patient states he is 'persistently tired' and 'Tired a lot'; assessment attributes it to stress/short sleep without labs (e.g., CBC, thyroid) or further evaluation"
-    }
-   ],
-   "priority": 0.3,
-   "resolved_by": null,
-   "verifiable_from_record": true,
-   "plan_verbs": null
-  },
-  {
-   "id": "llm-5-unmonitored_condition",
-   "topic": "medication reconciliation|acute migraine|documentation|abortive",
-   "kind": "gap",
-   "trigger": "Current medication list documented as 'none' despite patient reporting he takes acute migraine medication",
-   "evidence": [
-    {
-     "source": "llm_discovery",
-     "field": "unmonitored_condition",
-     "value": "Patient says he keeps 'the stuff for when a headache gets really bad,' but CURRENT MEDICATIONS = none listed and none prescribed, leaving the acute regimen unspecified"
-    }
-   ],
-   "priority": 0.3,
-   "resolved_by": null,
-   "verifiable_from_record": true,
-   "plan_verbs": null
-  }
- ],
  "7bd9e5b0-5d4b-f10d-9579-f4813faf9cdc": [
   {
    "id": "llm-0-undertreated_condition",
@@ -2648,6 +2544,142 @@
    "resolved_by": null,
    "verifiable_from_record": true,
    "plan_verbs": null
+  }
+ ],
+ "3a3a1f26-ed23-f65c-a7df-c96fac56f464": [
+  {
+   "id": "llm-0-undertreated_condition",
+   "topic": "migraine|preventive|prophylaxis|headache",
+   "kind": "gap",
+   "trigger": "Chronic migraine with ~2 attacks/week has no preventive therapy offered; only abortive management discussed",
+   "evidence": [
+    {
+     "source": "transcript",
+     "field": "PT",
+     "value": "Lately maybe two bad ones a week."
+    },
+    {
+     "source": "condition",
+     "field": "Chronic intractable migraine without aura",
+     "value": "Chronic intractable migraine without aura (disorder)"
+    },
+    {
+     "source": "transcript",
+     "field": "PT",
+     "value": "The stuff I keep for when a headache gets really bad, and that is about it."
+    },
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Patient reports two significant migraine attacks weekly for years, which meets threshold for preventive pharmacotherapy, yet only a headache log and abortive medication were addressed"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "base_priority": 0.6,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-depression_screening_gap",
+   "topic": "depression|PHQ|mood|screening",
+   "kind": "preventive",
+   "trigger": "Patient reports evening low mood, short sleep, fatigue, and social isolation but no formal depression screening (PHQ-2/9) was performed",
+   "evidence": [
+    {
+     "source": "transcript",
+     "field": "PT",
+     "value": "More like flat, some evenings. It lifts."
+    },
+    {
+     "source": "transcript",
+     "field": "PT",
+     "value": "There is not really anyone I just hang out with anymore."
+    },
+    {
+     "source": "condition",
+     "field": "Social isolation",
+     "value": "Social isolation (finding)"
+    },
+    {
+     "source": "llm_discovery",
+     "field": "depression_screening_gap",
+     "value": "He describes flatness in evenings, persistent tiredness, and loss of social connection; only informal questions were asked with no standardized depression screen documented"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "base_priority": 0.6,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-uninvestigated_symptom",
+   "topic": "fatigue|tiredness|sleep",
+   "kind": "gap",
+   "trigger": "Persistent fatigue not worked up despite complaint",
+   "evidence": [
+    {
+     "source": "transcript",
+     "field": "PT",
+     "value": "Mostly okay. Tired a lot."
+    },
+    {
+     "source": "transcript",
+     "field": "PT",
+     "value": "Five, six hours. I fall asleep fine, my brain just clocks in early."
+    },
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "Patient reports being persistently tired and sleeping only 5-6 hours; no evaluation (e.g., sleep, labs) documented"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "base_priority": 0.3,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-cost_adherence_risk",
+   "topic": "diet|cost|food insecurity|cholesterol",
+   "kind": "gap",
+   "trigger": "Low HDL/elevated LDL managed with lifestyle plus repeat lipid, but food-based plan may be constrained by severe financial strain",
+   "evidence": [
+    {
+     "source": "observation",
+     "field": "Cholesterol in HDL",
+     "value": "33.25 mg/dL"
+    },
+    {
+     "source": "transcript",
+     "field": "PT",
+     "value": "Last year we brought in about twenty-six thousand all together, and it does not stretch."
+    },
+    {
+     "source": "llm_discovery",
+     "field": "cost_adherence_risk",
+     "value": "Recommended dietary changes (fish, beans, oats) may be unaffordable given household of 7 living on $26,021/year"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "base_priority": 0.3,
+   "plan_verbs": [
+    "call back",
+    "call us",
+    "assistance program",
+    "sliding scale",
+    "90-day supply",
+    "ninety-day supply",
+    "price check",
+    "generic substitute",
+    "social work",
+    "case manager",
+    "resource"
+   ]
   }
  ]
 }

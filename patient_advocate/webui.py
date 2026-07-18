@@ -10,6 +10,7 @@ Then open http://localhost:<port>/
 """
 from __future__ import annotations
 
+import concurrent.futures
 import dataclasses
 import json
 import os
@@ -56,10 +57,12 @@ def _client() -> anthropic.Anthropic:
         return anthropic.Anthropic(api_key=key)
     return anthropic.Anthropic()  # let the SDK raise its normal error if nothing is configured
 
-PATIENTS = {
-    "4b4735a2-ee12-ec86-041f-3ba4d5c81ec9": "Elias Wisozk",
-    "6d4fd363-1ddb-74f8-516f-2fdc861cb736": "Julius Renner",
-}
+PATIENTS = dict(
+    sorted(
+        ((r["metadata"]["patient_id"], chart.patient_name(r)) for r in chart.load_cohort()),
+        key=lambda kv: kv[1],
+    )
+)
 
 
 def _candidate_dict(c: detect.Candidate) -> dict:
@@ -76,6 +79,51 @@ def _candidate_dict(c: detect.Candidate) -> dict:
 
 def _item_dict(it: deliver.DeliveredItem) -> dict:
     return dataclasses.asdict(it)
+
+
+# Detection reads only the chart + coverage_271 -- never the transcript --
+# so in a real deployment it's the part that could run the moment a visit is
+# scheduled, well before the patient is in the room. The demo mirrors that:
+# the moment the page loads, every patient's detection gets warmed into
+# detection_cache.json in the background, so by the time someone clicks
+# "Run visit" only the transcript (genuinely unavailable pre-visit) and
+# grounding are live. Picking "Live detection" in the dropdown still forces
+# a fresh discover() call regardless of what's warmed, for demoing the
+# reasoning stream itself.
+_warm_state_lock = threading.Lock()
+_warm_state = {"total": len(PATIENTS), "done": 0, "pending": set(PATIENTS)}
+_warm_started = False
+_warm_lock = threading.Lock()
+
+
+def _warm_one(pid: str, client) -> None:
+    try:
+        detect.run_all(chart.record_for(pid), client=client, use_cache=True)
+    except Exception:
+        pass  # best-effort prep -- a live "Run visit" click will just detect fresh for this patient
+    finally:
+        with _warm_state_lock:
+            _warm_state["done"] += 1
+            _warm_state["pending"].discard(pid)
+
+
+def _prewarm_all_patients() -> None:
+    client = _client()
+    # max_workers=4: patients already in detection_cache.json return instantly
+    # and cost nothing, but any that need a fresh discover() call are a real
+    # ~20-40s Opus call -- capped concurrency avoids bursting 25 of those at
+    # once against rate limits.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+        list(pool.map(lambda pid: _warm_one(pid, client), PATIENTS))
+
+
+def ensure_prewarm_started() -> None:
+    global _warm_started
+    with _warm_lock:
+        if _warm_started:
+            return
+        _warm_started = True
+    threading.Thread(target=_prewarm_all_patients, daemon=True).start()
 
 
 def _stream_worker(fn):
@@ -227,6 +275,12 @@ INDEX_HTML = """<!doctype html>
     display: flex;
     align-items: center;
   }
+  #warm-status {
+    padding-top: 0;
+    min-height: 0;
+    font-size: 12px;
+  }
+  #warm-status:empty { display: none; }
 
   main {
     display: grid;
@@ -405,6 +459,7 @@ INDEX_HTML = """<!doctype html>
 </header>
 
 <div class="status" id="status"></div>
+<div class="status" id="warm-status"></div>
 
 <main>
   <div class="col">
@@ -569,6 +624,19 @@ function run() {
 }
 
 document.getElementById('run-btn').addEventListener('click', run);
+
+function pollWarmStatus() {
+  fetch('/warm_status').then(r => r.json()).then(s => {
+    const el = document.getElementById('warm-status');
+    if (s.done >= s.total) {
+      el.textContent = '';
+      return;
+    }
+    el.textContent = `Pre-warming chart + insurance cache: ${s.done}/${s.total} patients ready...`;
+    setTimeout(pollWarmStatus, 1500);
+  }).catch(() => {});
+}
+pollWarmStatus();
 </script>
 </body>
 </html>
@@ -590,9 +658,20 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
         if parsed.path == "/":
+            ensure_prewarm_started()
             body = _build_index_html().encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+
+        if parsed.path == "/warm_status":
+            with _warm_state_lock:
+                body = json.dumps({"total": _warm_state["total"], "done": _warm_state["done"]}).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)

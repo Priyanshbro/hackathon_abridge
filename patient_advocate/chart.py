@@ -50,6 +50,11 @@ def wearable_for(patient_id: str) -> dict | None:
     return WEARABLE.get(patient_id)
 
 
+def patient_name(rec: dict) -> str:
+    name = rec["patient_context"]["patient"]["name"][0]
+    return f"{name['given'][0]} {name['family']}"
+
+
 def condition_labels(rec: dict) -> list[str]:
     return rec["patient_context"]["longitudinal_summary"]["condition_labels"]
 
