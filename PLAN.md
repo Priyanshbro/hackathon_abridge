@@ -347,16 +347,28 @@ Runs headless over all 25 encounters. Metrics:
 |---|---|---|---|
 | proposed | 6 | 4–10 | 155 |
 | after resolve | 4 | 0–7 | 97 |
-| after buckets + budget | 4 | 0–7 | 95 |
 | **delivered — visit** | **2** | 0–3 | 56 |
 | **delivered — health maintenance** | **1** | 0–2 | 21 |
 | **delivered — total** | **3** | 0–5 | 77 |
 
-Where the reduction actually happens: **resolve closes 58 of 155 (37%)**, Gate B
-(groundedness) drops a further **18 of 95 (19%)**, and **Gate C barely fires — 97
-survivors to 95**, because the buckets rarely exceed K=3 + 2 in the first place. One
-encounter delivers nothing, and it is a genuine zero (every candidate resolved during
-the visit), not a failure. Invariant violations: 0.
+Stage by stage, in `deliver()`'s actual order (guard -> filter -> **ground** ->
+split -> **budget**), totals across the 25 encounters:
+
+| stage | remaining | dropped |
+|---|---|---|
+| proposed | 155 | — |
+| after resolve | 97 | **58 (37%)** |
+| after goals-of-care guard | 97 | 0 |
+| after **Gate B** (groundedness) | 93 | **4** |
+| after bucket scoping | 92 | 1 |
+| after **Gate C** (K budget) | 75 | **17** |
+
+**The budget does most of the filtering, not the LLM gate.** Gate B drops only 4 of
+97 — and reading them, it behaves as an evidence-PACKAGING check rather than a
+clinical-validity one: 2 of the 4 concerns are plausibly real but their evidence array
+didn't carry the specific datum the trigger claimed. One encounter delivers nothing,
+and it is a genuine zero (every candidate resolved during the visit), not a failure.
+Invariant violations: 0.
 
 **The money chart: suppression ON vs OFF.** Same run, flip resolution tracking.
 OFF delivers a median of 6 per visit, most already answered during the visit — which is
