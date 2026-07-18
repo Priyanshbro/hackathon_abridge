@@ -91,6 +91,47 @@ def check_suppression_accuracy(candidates: list[detect.Candidate], sample_size: 
     return {"checks": checks, "accuracy": n_ok / len(checks) if checks else 1.0}
 
 
+def check_resolution_topic_locality(candidates: list[detect.Candidate]) -> dict:
+    """Diagnostic, not a hard invariant: for each resolved candidate, does
+    the RESOLVING UTTERANCE ITSELF mention one of the candidate's own topic
+    keywords -- not just a plan-verb from its vocabulary?
+
+    check_invariants() only proves a plan-verb is present; it can't tell
+    whether that plan-verb utterance is actually about the candidate's
+    topic. resolve.py's windowed lookback can bridge two genuinely
+    unrelated subjects if they happen to fall within TOPIC_WINDOW of each
+    other -- confirmed live: an anemia/CBC candidate ('anemia|CBC|
+    hemoglobin|B12|iron') false-resolved off "I'm sending a dental referral
+    today" because 'B12' was mentioned 4 utterances earlier and 'referral'
+    is a generic plan-verb. Tuning TOPIC_WINDOW doesn't cleanly fix this --
+    that false match and a legitimate one (blood-pressure candidate
+    resolved via a recheck-bloodwork line) have the identical 4-utterance
+    gap, so no window size separates them.
+
+    This doesn't fix false suppressions. It counts and surfaces them so
+    they're visible instead of silently trusted.
+
+    Coarse in the other direction too: a resolving utterance that refers to
+    the topic by pronoun ("take it with breakfast... we'll recheck
+    bloodwork") rather than restating the keyword gets flagged here even
+    though it may be a perfectly legitimate resolution -- there's no
+    anaphora resolution, just literal keyword presence. Read n_window_only
+    as "worth a human glance," not "confirmed wrong." The anemia/dental case
+    this was built to catch is unambiguous; not everything it flags is."""
+    resolved = [c for c in candidates if c.resolved_by is not None]
+    flagged = []
+    for c in resolved:
+        text = c.resolved_by.split(": ", 1)[-1]
+        keywords = resolve._keywords(c.topic)
+        if not resolve._contains_any(text, keywords):
+            flagged.append({"id": c.id, "topic": c.topic, "resolved_by": c.resolved_by})
+    return {
+        "n_resolved": len(resolved),
+        "n_window_only": len(flagged),
+        "flagged": flagged,
+    }
+
+
 def check_invariants(candidates: list[detect.Candidate]) -> list[str]:
     """Hard contract on resolution. Returns a list of violations -- empty is
     a pass. These are assertions, not metrics: a violation means the
@@ -162,6 +203,7 @@ def run_full(patient_ids: list[str], client=None) -> list[dict]:
                 "groundedness": check_groundedness(out["candidates"], out["delivered"]),
                 "suppression_accuracy": check_suppression_accuracy(out["candidates"]),
                 "invariant_violations": check_invariants(out["candidates"]),
+                "topic_locality": check_resolution_topic_locality(out["candidates"]),
             }
         )
     return results
@@ -173,6 +215,13 @@ def summarize(results: list[dict]) -> dict:
     # only encounters that actually delivered something have a groundedness rate
     rates = [r["groundedness"]["rate"] for r in results if r["groundedness"]["rate"] is not None]
     violations = [v for r in results for v in r.get("invariant_violations", [])]
+    n_resolved = sum(r["topic_locality"]["n_resolved"] for r in results if "topic_locality" in r)
+    n_window_only = sum(r["topic_locality"]["n_window_only"] for r in results if "topic_locality" in r)
+    window_only_flagged = [
+        {"patient_id": r["patient_id"], **f}
+        for r in results
+        for f in r.get("topic_locality", {}).get("flagged", [])
+    ]
     return {
         "n_encounters": len(results),
         "median_proposed": _median(proposed),
@@ -182,4 +231,7 @@ def summarize(results: list[dict]) -> dict:
         "mean_groundedness_rate": sum(rates) / len(rates) if rates else None,
         "invariant_violations": violations,
         "invariants_passed": not violations,
+        "n_resolved": n_resolved,
+        "n_window_only_resolutions": n_window_only,
+        "window_only_flagged": window_only_flagged,
     }

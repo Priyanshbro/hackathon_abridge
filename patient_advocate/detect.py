@@ -212,6 +212,30 @@ DISCOVER_SCHEMA = {
 
 _SEVERITY_PRIORITY = {"high": 0.9, "moderate": 0.6, "low": 0.3}
 
+# barrier-type gaps need a resolution vocabulary scoped to actually solving
+# the barrier, not generic clinical action verbs. Sending a referral or
+# starting a medication doesn't address whether the patient can afford or
+# attend it -- confirmed live on Elias, where an LLM-found cost_adherence_risk
+# candidate (topic included "dental") false-resolved off "I'm sending a
+# dental referral today" purely because "referral" is a generic plan-verb and
+# "dental" happened to be one of its own topic keywords. Same trap as
+# Julius's cost case, just unprotected because discover() never set
+# plan_verbs on LLM-found candidates.
+BARRIER_TYPES = {"cost_adherence_risk", "social_barrier_to_plan"}
+BARRIER_PLAN_VERBS = (
+    "call back",
+    "call us",
+    "assistance program",
+    "sliding scale",
+    "90-day supply",
+    "ninety-day supply",
+    "price check",
+    "generic substitute",
+    "social work",
+    "case manager",
+    "resource",
+)
+
 
 def discover(rec: dict, client) -> list[Candidate]:
     """LLM-primary detection -- the breadth layer, and where the demo's best
@@ -245,6 +269,7 @@ def discover(rec: dict, client) -> list[Candidate]:
                 evidence=[{"source": "llm_discovery", "field": g["type"], "value": g["evidence"]}],
                 priority=_SEVERITY_PRIORITY.get(g["severity"], 0.5),
                 verifiable_from_record=g["verifiable_from_record"],
+                plan_verbs=BARRIER_PLAN_VERBS if g["type"] in BARRIER_TYPES else None,
             )
         )
     return out

@@ -87,7 +87,7 @@ def run_live(patient_id: str, speed: float = 8.0, client=None, console: Console 
     orchestrator eval.py drives."""
     client = client or anthropic.Anthropic()
     rec = chart.record_for(patient_id)
-    candidates = detect.run_all(rec)
+    candidates = detect.run_all(rec, client=client)
 
     # stable display order, captured once -- resolve.py zeroes priority on
     # resolution, so sorting live by priority would make a candidate jump to
