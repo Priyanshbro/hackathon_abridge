@@ -37,6 +37,24 @@ def _contains_any(text: str, phrases) -> bool:
     return any(re.search(r"\b" + re.escape(p) + r"\b", text) for p in phrases)
 
 
+def _sentences(text: str) -> list[str]:
+    return [s for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
+
+
+def _plan_verb_near_topic(text: str, keywords, plan_verbs) -> bool:
+    """True when a plan verb and one of this candidate's topic keywords
+    share a SENTENCE. A multi-topic recap utterance ("Gums -- dental
+    referral... Cholesterol -- diet and movement, recheck later. Migraines
+    -- stable pattern...") puts unrelated topics in the same utterance but
+    different sentences; same-utterance co-occurrence alone let "referral"
+    (about dental) or "recheck" (about cholesterol) falsely resolve a
+    migraine candidate whose own sentence assigned it no plan at all."""
+    return any(
+        _contains_any(sentence, plan_verbs) and _contains_any(sentence, keywords)
+        for sentence in _sentences(text)
+    )
+
+
 def resolve(candidates: list[Candidate], utterance: Utterance, history: list[Utterance]) -> None:
     """Mutate candidates in place. Called once per utterance during replay;
     `history` is every utterance seen so far this visit, including the
@@ -69,7 +87,14 @@ def resolve(candidates: list[Candidate], utterance: Utterance, history: list[Utt
     untouched: no match, no change.
     """
     recent = history[-TOPIC_WINDOW:]
-    recent_text = " ".join(u.text for u in recent)
+    # CLINICIAN-only, same reasoning as the partial-decay fix below: a
+    # patient naming their own symptom ("the stuff I keep for when a
+    # headache gets really bad") is evidence the concern is LIVE, not that
+    # anyone addressed it. Scanning all speakers here let an unrelated
+    # clinician plan-verb utterance ("we will go line by line" on the
+    # medication list) falsely resolve a migraine candidate just because
+    # the patient had said "headache" one turn earlier.
+    recent_text = " ".join(u.text for u in recent if u.speaker in CLINICIAN_SPEAKERS)
     text = utterance.text
     is_clinician = utterance.speaker in CLINICIAN_SPEAKERS
 
@@ -83,6 +108,9 @@ def resolve(candidates: list[Candidate], utterance: Utterance, history: list[Utt
         topic_recent = _contains_any(recent_text, keywords)
         topic_now = _contains_any(text, keywords)
         has_plan_verb = is_clinician and _contains_any(text, plan_verbs)
+
+        if has_plan_verb and topic_now and not _plan_verb_near_topic(text, keywords, plan_verbs):
+            has_plan_verb = False  # same utterance, different sentence -- not a plan for THIS topic
 
         if has_plan_verb and topic_recent:
             c.resolved_by = f"{utterance.idx}: {utterance.text}"
