@@ -308,6 +308,17 @@ def _detection_context(rec: dict) -> str:
 
 CACHE_PATH = pathlib.Path(__file__).parent.parent / "data" / "detection_cache.json"
 
+# The committed cache is a TRIAL ARTIFACT for this round of work, not a build
+# input. It exists so the deterministic eval (ablation, invariants, silence
+# control) runs at zero cost against a fixed candidate set, and so repeat trial
+# runs don't re-spend on detection. It is NOT the demo path -- ui.run_live
+# passes use_cache=False and detects live.
+#
+# Treat it as disposable: after any change to DISCOVER_SYS, GAP_TYPES, the
+# clue-elevation block, or the model, it is stale and must be deleted and
+# rewarmed. Nothing detects that automatically, so a stale cache will silently
+# serve old candidates.
+
 
 def _cache_load() -> dict:
     if CACHE_PATH.exists():

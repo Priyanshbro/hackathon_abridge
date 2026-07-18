@@ -5,4 +5,3 @@ venv/
 .env*
 smoke_test_*.py
 diagnose_*.py
-data/detection_cache.json
