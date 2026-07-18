@@ -290,7 +290,7 @@ BARRIER_PLAN_VERBS = (
 )
 
 
-def discover(rec: dict, client) -> list[Candidate]:
+def discover(rec: dict, client, on_event=None) -> list[Candidate]:
     """LLM-primary detection -- the breadth layer, and where the demo's best
     findings come from. Measured against the deterministic rules on all 25
     encounters: 198 gaps vs 45, zero encounters with nothing found vs three,
@@ -298,7 +298,15 @@ def discover(rec: dict, client) -> list[Candidate]:
 
     Clue elevation (clues.py) is appended to the prompt: deterministic
     extraction of the patient's own words and wearable deltas. Without it the
-    OSA insight on Elias fired in 1 of 5 runs; with it, 2 of 2."""
+    OSA insight on Elias fired in 1 of 5 runs; with it, 2 of 2.
+
+    on_event, if given, is called synchronously with dicts as they occur:
+    {"type": "thinking", "text": ...} for each streamed reasoning chunk
+    (requires thinking.display="summarized", only turned on when a callback
+    is present -- no reason to pay for summarized display when nothing
+    reads it), and {"type": "candidate_found", ...} once per gap after the
+    call completes. Callers that don't pass on_event get identical behavior
+    and API usage to before this existed."""
     wearable = chart.wearable_for(rec["metadata"]["patient_id"]) or {}
     cue_block = clues.contributing_factors_block(rec["transcript"], wearable.get("days"))
     ctx = _detection_context(rec)
@@ -311,7 +319,11 @@ def discover(rec: dict, client) -> list[Candidate]:
     # measurement -- if delivered gap quality/breadth regresses, raise this
     # before anything else, and ideally re-run the full comparison this was
     # measured against.
-    response = client.messages.create(
+    thinking_config = {"type": "adaptive"}
+    if on_event:
+        thinking_config["display"] = "summarized"  # default is "omitted" (empty text) -- nothing to stream otherwise
+
+    request_kwargs = dict(
         model=DISCOVER_MODEL,
         # 4000 truncated mid-JSON once citations became required: each gap now
         # carries 1-3 {source, field, value} objects with verbatim quotes, and
@@ -320,33 +332,52 @@ def discover(rec: dict, client) -> list[Candidate]:
         # whole encounter is lost.
         max_tokens=8000,
         system=DISCOVER_SYS + cue_block,
-        thinking={"type": "adaptive"},
+        thinking=thinking_config,
         output_config={
             "format": {"type": "json_schema", "schema": DISCOVER_SCHEMA},
             "effort": "low",
         },
         messages=[{"role": "user", "content": ctx}],
     )
+
+    if on_event:
+        with client.messages.stream(**request_kwargs) as stream:
+            for event in stream:
+                if event.type == "content_block_delta" and event.delta.type == "thinking_delta":
+                    on_event({"type": "thinking", "text": event.delta.thinking})
+            response = stream.get_final_message()
+    else:
+        response = client.messages.create(**request_kwargs)
+
     text = next(b.text for b in response.content if b.type == "text")
     out = []
     for i, g in enumerate(json.loads(text)["gaps"]):
-        out.append(
-            Candidate(
-                id=f"llm-{i}-{g['type']}",
-                topic=g["topic"],
-                kind="preventive" if g["type"] in PREVENTIVE_TYPES else "gap",
-                trigger=g["finding"],
-                # citations first -- Gate B reads the evidence array in order,
-                # and the chart-grounded items are what it can actually verify.
-                # The prose summary is kept last for the phrasing call's context.
-                evidence=g["citations"]
-                + [{"source": "llm_discovery", "field": g["type"], "value": g["evidence"]}],
-                priority=_SEVERITY_PRIORITY.get(g["severity"], 0.5),
-                base_priority=_SEVERITY_PRIORITY.get(g["severity"], 0.5),
-                verifiable_from_record=g["verifiable_from_record"],
-                plan_verbs=BARRIER_PLAN_VERBS if g["type"] in BARRIER_TYPES else None,
-            )
+        c = Candidate(
+            id=f"llm-{i}-{g['type']}",
+            topic=g["topic"],
+            kind="preventive" if g["type"] in PREVENTIVE_TYPES else "gap",
+            trigger=g["finding"],
+            # citations first -- Gate B reads the evidence array in order,
+            # and the chart-grounded items are what it can actually verify.
+            # The prose summary is kept last for the phrasing call's context.
+            evidence=g["citations"]
+            + [{"source": "llm_discovery", "field": g["type"], "value": g["evidence"]}],
+            priority=_SEVERITY_PRIORITY.get(g["severity"], 0.5),
+            base_priority=_SEVERITY_PRIORITY.get(g["severity"], 0.5),
+            verifiable_from_record=g["verifiable_from_record"],
+            plan_verbs=BARRIER_PLAN_VERBS if g["type"] in BARRIER_TYPES else None,
         )
+        out.append(c)
+        if on_event:
+            on_event(
+                {
+                    "type": "candidate_found",
+                    "id": c.id,
+                    "kind": c.kind,
+                    "trigger": c.trigger,
+                    "priority": c.priority,
+                }
+            )
     return out
 
 
@@ -416,7 +447,7 @@ def _from_cache(d: dict) -> Candidate:
     return Candidate(**d)
 
 
-def run_all(rec: dict, client=None, use_cache: bool = True) -> list[Candidate]:
+def run_all(rec: dict, client=None, use_cache: bool = True, on_event=None) -> list[Candidate]:
     """Deterministic generators always; LLM discovery when a client is given.
 
     Detection is CACHED per patient, for two reasons. First, it is a pre-visit
@@ -445,7 +476,7 @@ def run_all(rec: dict, client=None, use_cache: bool = True) -> list[Candidate]:
     if client is None:
         return out
 
-    discovered = discover(rec, client)
+    discovered = discover(rec, client, on_event=on_event)
     out.extend(discovered)
     if use_cache:
         cache = _cache_load()

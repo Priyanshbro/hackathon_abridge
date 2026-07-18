@@ -14,8 +14,10 @@ import dataclasses
 import json
 import os
 import pathlib
+import queue
 import re
 import sys
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
@@ -76,6 +78,40 @@ def _item_dict(it: deliver.DeliveredItem) -> dict:
     return dataclasses.asdict(it)
 
 
+def _stream_worker(fn):
+    """Run fn(on_event) on a background thread and yield each event the
+    moment it's queued, instead of after fn() returns. detect.discover()
+    and deliver.ground() call on_event synchronously from inside a blocking
+    API call -- without a thread, those events could only be handed back to
+    this generator after the whole call finished, defeating the point of a
+    live reasoning feed. fn's return value comes back through `yield from`,
+    which surfaces a generator's `return` value as its StopIteration
+    result; any exception raised in the worker is re-raised here instead."""
+    q: queue.Queue = queue.Queue()
+    box = {}
+
+    def on_event(ev):
+        q.put(("event", ev))
+
+    def worker():
+        try:
+            box["result"] = fn(on_event)
+        except Exception as exc:  # noqa: BLE001 -- re-raised on the generator's thread below
+            box["error"] = exc
+        finally:
+            q.put(("done", None))
+
+    threading.Thread(target=worker, daemon=True).start()
+    while True:
+        kind, payload = q.get()
+        if kind == "done":
+            break
+        yield payload
+    if "error" in box:
+        raise box["error"]
+    return box["result"]
+
+
 def run_encounter_events(patient_id: str, speed: float = 8.0, use_cache: bool = True, client=None):
     """Same three phases as ui.run_live(), but yields JSON-serializable
     event dicts instead of updating a rich Layout. Runs in real wall-clock
@@ -85,7 +121,9 @@ def run_encounter_events(patient_id: str, speed: float = 8.0, use_cache: bool = 
     rec = chart.record_for(patient_id)
 
     yield {"type": "status", "message": "Reading chart, detecting candidates..."}
-    candidates = detect.run_all(rec, client=client, use_cache=use_cache)
+    candidates = yield from _stream_worker(
+        lambda on_event: detect.run_all(rec, client=client, use_cache=use_cache, on_event=on_event)
+    )
     order = {c.id: i for i, c in enumerate(sorted(candidates, key=lambda c: c.priority, reverse=True))}
 
     yield {
@@ -109,7 +147,9 @@ def run_encounter_events(patient_id: str, speed: float = 8.0, use_cache: bool = 
         }
 
     yield {"type": "status", "message": "Visit complete -- grounding and phrasing..."}
-    out = deliver.deliver(client, candidates, rec)
+    out = yield from _stream_worker(
+        lambda on_event: deliver.deliver(client, candidates, rec, on_event=on_event)
+    )
     yield {
         "type": "delivered",
         "visit": [_item_dict(i) for i in out["visit"]],
@@ -190,7 +230,7 @@ INDEX_HTML = """<!doctype html>
 
   main {
     display: grid;
-    grid-template-columns: 1.4fr 1fr;
+    grid-template-columns: 1.1fr 1fr 1fr;
     gap: 20px;
     padding: 0 28px 28px;
     height: calc(100vh - 130px);
@@ -291,6 +331,52 @@ INDEX_HTML = """<!doctype html>
   .item.maint .context { border-left-color: var(--maint-soft); }
   .empty-note { color: var(--text-muted); font-style: italic; font-size: 13px; }
 
+  #reasoning-card { flex: 1; }
+  #reasoning-card h2 { display: flex; align-items: center; gap: 7px; }
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--resolved);
+  }
+  .live-dot.active {
+    background: var(--accent);
+    animation: pulse 1.1s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+  #reasoning {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .reasoning-line {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  .reasoning-line:last-child { border-bottom: none; }
+  .reasoning-line.thinking {
+    color: var(--text);
+    font-style: italic;
+    white-space: pre-wrap;
+  }
+  .reasoning-line .tag {
+    display: inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 5px;
+    margin-right: 7px;
+  }
+  .reasoning-line .tag.found { background: var(--accent-soft); color: var(--accent); }
+  .reasoning-line .tag.pass { background: var(--maint-soft); color: var(--maint-accent); }
+  .reasoning-line .tag.fail { background: var(--border); color: var(--text-muted); }
+  .reasoning-line .meta { color: var(--text-muted); }
+
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -336,6 +422,14 @@ INDEX_HTML = """<!doctype html>
       <h2>Delivered</h2>
       <div class="card-scroll" id="delivered">
         <div class="empty-note">Run a visit to see delivered questions.</div>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card" id="reasoning-card">
+      <h2>Agent reasoning <span class="live-dot" id="reasoning-live"></span></h2>
+      <div class="card-scroll" id="reasoning">
+        <div class="empty-note">Live model reasoning appears here during detection and grounding. Requires "Live detection" mode -- cached runs skip the model calls this streams from.</div>
       </div>
     </div>
   </div>
@@ -391,6 +485,33 @@ function appendLine(speaker, text) {
   el.scrollTop = el.scrollHeight;
 }
 
+// `thinkingEl` accumulates streamed thinking_delta chunks into one growing
+// paragraph; it's reset to null on any non-thinking reasoning event so the
+// next thinking burst (e.g. the next model call) starts a fresh paragraph
+// instead of running on from the previous one.
+let thinkingEl = null;
+
+function appendThinkingDelta(text) {
+  const el = document.getElementById('reasoning');
+  if (!thinkingEl) {
+    thinkingEl = document.createElement('div');
+    thinkingEl.className = 'reasoning-line thinking';
+    el.appendChild(thinkingEl);
+  }
+  thinkingEl.textContent += text;
+  el.scrollTop = el.scrollHeight;
+}
+
+function appendReasoning(html) {
+  thinkingEl = null;
+  const el = document.getElementById('reasoning');
+  const div = document.createElement('div');
+  div.className = 'reasoning-line';
+  div.innerHTML = html;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+}
+
 function run() {
   const patientId = document.getElementById('patient-select').value;
   const speed = document.getElementById('speed-select').value;
@@ -401,7 +522,10 @@ function run() {
   document.getElementById('transcript').innerHTML = '';
   document.getElementById('candidates').innerHTML = '';
   document.getElementById('delivered').innerHTML = '<div class="empty-note">Running...</div>';
+  document.getElementById('reasoning').innerHTML = '';
   document.getElementById('status').textContent = '';
+  document.getElementById('reasoning-live').classList.add('active');
+  thinkingEl = null;
 
   const es = new EventSource(`/events?patient_id=${patientId}&speed=${speed}&use_cache=${useCache}`);
 
@@ -419,18 +543,27 @@ function run() {
       renderCandidates(ev.candidates);
     } else if (ev.type === 'delivered') {
       renderDelivered(ev.visit, ev.health_maintenance);
+    } else if (ev.type === 'thinking') {
+      appendThinkingDelta(ev.text);
+    } else if (ev.type === 'candidate_found') {
+      appendReasoning(`<span class="tag found">found</span>${ev.trigger} <span class="meta">(${ev.kind}, p=${ev.priority.toFixed(2)})</span>`);
+    } else if (ev.type === 'ground_result') {
+      appendReasoning(`<span class="tag ${ev.grounded ? 'pass' : 'fail'}">${ev.grounded ? 'grounded' : 'dropped'}</span>${ev.reason}`);
     } else if (ev.type === 'done') {
       document.getElementById('status').textContent = '';
+      document.getElementById('reasoning-live').classList.remove('active');
       es.close();
       btn.disabled = false;
     } else if (ev.type === 'error') {
       document.getElementById('status').textContent = 'Error: ' + ev.message;
+      document.getElementById('reasoning-live').classList.remove('active');
       es.close();
       btn.disabled = false;
     }
   };
   es.onerror = () => {
     btn.disabled = false;
+    document.getElementById('reasoning-live').classList.remove('active');
     es.close();
   };
 }

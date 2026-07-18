@@ -117,11 +117,16 @@ def filter_survivors(candidates: list[Candidate]) -> list[Candidate]:
     return [c for c in candidates if c.resolved_by is None]
 
 
-def ground(client, survivors: list[Candidate]) -> list[Candidate]:
+def ground(client, survivors: list[Candidate], on_event=None) -> list[Candidate]:
     """Gate B: one batched call over all survivors. Each candidate must
     cite a specific datum from its own evidence list or it gets dropped.
     Deterministic in spirit -- thinking disabled, this is a check, not
-    open-ended reasoning."""
+    open-ended reasoning.
+
+    on_event, if given, is called once per result with
+    {"type": "ground_result", "id":, "grounded":, "reason":} -- the model
+    always computes "reason" for the schema; without a callback it was
+    simply discarded."""
     if not survivors:
         return []
 
@@ -157,7 +162,18 @@ def ground(client, survivors: list[Candidate]) -> list[Candidate]:
         messages=[{"role": "user", "content": prompt}],
     )
     text = next(b.text for b in response.content if b.type == "text")
-    results = {r["id"]: r["grounded"] for r in json.loads(text)["results"]}
+    parsed = json.loads(text)["results"]
+    if on_event:
+        for r in parsed:
+            on_event(
+                {
+                    "type": "ground_result",
+                    "id": r["id"],
+                    "grounded": r["grounded"],
+                    "reason": r["reason"],
+                }
+            )
+    results = {r["id"]: r["grounded"] for r in parsed}
     return [c for c in survivors if results.get(c.id, False)]
 
 
@@ -370,13 +386,13 @@ def split_buckets(candidates: list[Candidate], rec: dict) -> tuple[list[Candidat
     return visit, maintenance
 
 
-def deliver(client, candidates: list[Candidate], rec: dict) -> dict:
+def deliver(client, candidates: list[Candidate], rec: dict, on_event=None) -> dict:
     """Returns two lists. `visit` is the top-K questions from today's
     encounter; `health_maintenance` is the PCP-scoped screening list, capped
     separately and empty for specialist/hospice/SNF encounters."""
     candidates = goals_of_care_guard(candidates, rec)
     survivors = filter_survivors(candidates)
-    survivors = ground(client, survivors)
+    survivors = ground(client, survivors, on_event=on_event)
 
     visit_c, maint_c = split_buckets(survivors, rec)
     visit_budgeted = budget(visit_c, K_BUDGET)
