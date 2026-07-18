@@ -7,12 +7,18 @@ import chart
 @dataclass
 class Candidate:
     id: str
-    topic: str  # for resolution matching
+    topic: str  # for resolution matching -- "|"-delimited keywords, e.g. "cost|afford|dollar"
     kind: str  # gap | score | drug_disease | clue | wearable
     trigger: str  # human-readable why
     evidence: list[dict]  # [{source, field, value, date}] -- must be verifiable
     priority: float
     resolved_by: str | None = None  # utterance idx + span, set during the visit
+    plan_verbs: tuple[str, ...] | None = None  # override resolve.py's default
+    # clinical plan-verb list when "addressed" means something more specific
+    # than start/order/refer -- e.g. cost_adherence_risk should pass
+    # contingency verbs ("call back", "assistance program", "sliding scale",
+    # "90-day supply", "price check") so a plain reassurance line like
+    # "these are all cheap generics" never counts as resolving it.
 
 
 # keyword found in condition_labels -> (specialist title, benefit-line specialty name)
