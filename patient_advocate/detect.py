@@ -320,6 +320,16 @@ def _cache_store(cache: dict) -> None:
     CACHE_PATH.write_text(json.dumps(cache, indent=1))
 
 
+def _from_cache(d: dict) -> Candidate:
+    """JSON has no tuples. plan_verbs round-trips as a list, and resolve.py
+    compares it against its own tuple constants, so restore the type here
+    rather than leaving two shapes of the same field in circulation."""
+    d = dict(d)
+    if d.get("plan_verbs") is not None:
+        d["plan_verbs"] = tuple(d["plan_verbs"])
+    return Candidate(**d)
+
+
 def run_all(rec: dict, client=None, use_cache: bool = True) -> list[Candidate]:
     """Deterministic generators always; LLM discovery when a client is given.
 
@@ -332,15 +342,21 @@ def run_all(rec: dict, client=None, use_cache: bool = True) -> list[Candidate]:
     instead of the gates. Both arms must see an identical candidate set.
 
     Pass use_cache=False to force a fresh detection.
+
+    The cache is consulted BEFORE the client is required. A warmed cache is
+    the whole reason the deterministic eval (ablation, invariants, the silence
+    control) can run at zero cost with client=None -- checking `client` first
+    would make those paths see only the deterministic generators and report
+    an empty candidate set.
     """
     out = [c for gen in GENERATORS for c in [gen(rec)] if c is not None]
-    if client is None:
-        return out
 
     pid = rec["metadata"]["patient_id"]
     cache = _cache_load() if use_cache else {}
     if pid in cache:
-        out.extend(Candidate(**c) for c in cache[pid])
+        out.extend(_from_cache(c) for c in cache[pid])
+        return out
+    if client is None:
         return out
 
     discovered = discover(rec, client)

@@ -9,7 +9,13 @@ from detect import Candidate
 MODEL = "claude-sonnet-5"
 K_BUDGET = 3
 
-HOSPICE_SNF_KEYWORDS = ("hospice", "skilled nursing", "snf", "nursing facility", "nursing home")
+# Hospice and SNF are NOT the same context and must not share a guard.
+# Hospice is comfort-focused: preventive and referral candidates are dropped
+# outright. A SNF admission is rehabilitative -- mood screening is routine
+# there (PHQ-9 on admission), while cancer screening is not. So SNF gets a
+# narrowed maintenance scope in split_buckets() rather than a hard drop here.
+HOSPICE_KEYWORDS = ("hospice",)
+SNF_KEYWORDS = ("skilled nursing", "snf", "nursing facility", "nursing home")
 GOALS_OF_CARE_KINDS = {"referral", "preventive"}
 GOALS_OF_CARE_TRIGGER_KEYWORDS = ("screening", "specialist", "referral")
 
@@ -67,13 +73,21 @@ PHRASE_SCHEMA = {
 }
 
 
+def _context_text(rec: dict) -> str:
+    return (chart.visit_title(rec) + " " + chart.service_provider(rec)).lower()
+
+
 def is_goals_of_care_context(rec: dict) -> bool:
-    """Hospice or SNF admission -- deterministic gate on Encounter.class +
-    serviceProvider/visit_title. Cheap, explainable, checked first."""
+    """Hospice admission -- deterministic gate on Encounter.class +
+    serviceProvider/visit_title. Cheap, explainable, checked first.
+    SNF deliberately excluded: see the keyword constants above."""
     if chart.encounter_class(rec) == "HH":
         return True
-    text = (chart.visit_title(rec) + " " + chart.service_provider(rec)).lower()
-    return any(k in text for k in HOSPICE_SNF_KEYWORDS)
+    return any(k in _context_text(rec) for k in HOSPICE_KEYWORDS)
+
+
+def is_snf_context(rec: dict) -> bool:
+    return any(k in _context_text(rec) for k in SNF_KEYWORDS)
 
 
 def goals_of_care_guard(candidates: list[Candidate], rec: dict) -> list[Candidate]:
@@ -199,29 +213,89 @@ HEALTH_MAINTENANCE_BUDGET = 2
 
 # health maintenance is PCP scope. A psychiatrist is not going to action a
 # mammogram, so surfacing it at a specialist visit is noise.
-PRIMARY_CARE_KEYWORDS = (
-    "primary care", "family", "internal medicine", "general", "wellness",
-    "health center", "community health",
+#
+# The rule is an EXCLUSION list, not an inclusion list. Enumerating specialty
+# markers is a short, stable vocabulary; enumerating every way a chart writes
+# "primary care" is not -- the previous inclusion list ("primary care",
+# "family", "general", "wellness", ...) silently dropped 13 of 32 preventive
+# candidates, classifying "Annual physical -- geriatric cardiometabolic" as
+# specialist while "Annual physical -- new adult wellness exam" passed, purely
+# on incidental wording in a free-text title. An ambulatory visit is treated as
+# primary care unless something says otherwise.
+SPECIALTY_MARKERS = (
+    "cardiology", "oncology", "psychiatry", "dermatology", "orthopedic",
+    "ophthalmology", "physical therapy", "podiatry", "rheumatology",
+    "gastroenterology", "pulmonology", "neurology", "urology", "nephrology",
+)
+
+# Prenatal care is primary-care adjacent -- the obstetric team carries general
+# health maintenance for a pregnant patient, so the bucket stays open.
+PRENATAL_MARKERS = ("prenatal", "obstetric", "pregnancy", "antepartum")
+
+# Dental is its own scope: a dentist carries health maintenance for DENTAL
+# problems only. The bucket is not suppressed, it is narrowed -- surfacing a
+# mammogram at a dental visit is noise, surfacing a periodontal recall is not.
+DENTAL_MARKERS = ("dental", "dentist", "oral surgery", "gingival", "periodont")
+DENTAL_TOPIC_MARKERS = ("dental", "oral", "tooth", "teeth", "gingiv", "periodont", "caries")
+
+# A SNF admission carries mood/psychosocial screening -- PHQ-9 on admission is
+# routine, and bereavement/isolation are live issues in that setting. It does
+# not carry cancer screening.
+SNF_TOPIC_MARKERS = (
+    "depression", "phq", "mood", "anxiety", "bereavement", "isolation",
+    "psychosocial", "mental health", "cognitive", "delirium",
 )
 
 
-def is_primary_care(rec: dict) -> bool:
-    """Same care-context triple the scope routing uses: Encounter.class,
+def maintenance_scope(rec: dict) -> str:
+    """Which health-maintenance items this encounter can carry:
+    'all' (primary care or prenatal), 'dental', 'snf', or 'none'.
+
+    Same care-context triple the scope routing uses: Encounter.class,
     visit_title, serviceProvider. No Practitioner resource exists in the
     bundle, so there is no specialty lookup -- this triple is the signal."""
+    if is_snf_context(rec):
+        return "snf"
     if chart.encounter_class(rec) != "AMB":
-        return False
-    text = (chart.visit_title(rec) + " " + chart.service_provider(rec)).lower()
-    return any(k in text for k in PRIMARY_CARE_KEYWORDS)
+        return "none"
+    text = _context_text(rec)
+    if any(k in text for k in PRENATAL_MARKERS):
+        return "all"
+    if any(k in text for k in DENTAL_MARKERS):
+        return "dental"
+    if any(k in text for k in SPECIALTY_MARKERS):
+        return "none"
+    return "all"
+
+
+def is_primary_care(rec: dict) -> bool:
+    """Kept as the boolean form for callers that only need 'does this
+    encounter carry general health maintenance'."""
+    return maintenance_scope(rec) == "all"
 
 
 def split_buckets(candidates: list[Candidate], rec: dict) -> tuple[list[Candidate], list[Candidate]]:
     """Visit questions vs health maintenance. Screening/preventive items are
     a different category from questions arising out of what happened today,
     and they must not compete with them for the K=3 budget -- they render as
-    their own shorter list. Suppressed entirely outside primary care."""
+    their own shorter list. Scoped by maintenance_scope(): everything at a
+    primary-care or prenatal visit, dental items only at a dental visit,
+    mood/psychosocial items only at a SNF admission, nothing at a specialist,
+    hospice, or other inpatient encounter."""
     visit = [c for c in candidates if c.kind != "preventive"]
-    maintenance = [c for c in candidates if c.kind == "preventive"] if is_primary_care(rec) else []
+    preventive = [c for c in candidates if c.kind == "preventive"]
+
+    scope = maintenance_scope(rec)
+    topic_filter = {"dental": DENTAL_TOPIC_MARKERS, "snf": SNF_TOPIC_MARKERS}.get(scope)
+    if scope == "none":
+        maintenance = []
+    elif topic_filter:
+        maintenance = [
+            c for c in preventive
+            if any(k in (c.topic + " " + c.trigger).lower() for k in topic_filter)
+        ]
+    else:
+        maintenance = preventive
     return visit, maintenance
 
 

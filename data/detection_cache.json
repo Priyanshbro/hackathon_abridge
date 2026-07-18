@@ -1,0 +1,2653 @@
+{
+ "4b4735a2-ee12-ec86-041f-3ba4d5c81ec9": [
+  {
+   "id": "llm-0-duplicate_prescription",
+   "topic": "hydrochlorothiazide|duplicate|prescription|HCTZ",
+   "kind": "gap",
+   "trigger": "Hydrochlorothiazide 25 mg was prescribed twice at this single visit, in addition to being the patient's newly started antihypertensive",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "duplicate_prescription",
+     "value": "PRESCRIBED AT THIS VISIT lists 'Hydrochlorothiazide 25 MG Oral Tablet, Hydrochlorothiazide 25 MG Oral Tablet' \u2014 the same drug/dose entered twice"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-missing_diagnostic_workup",
+   "topic": "lipid|cholesterol|metabolic syndrome|cardiovascular risk|statin",
+   "kind": "gap",
+   "trigger": "Metabolic syndrome and new hypertension were diagnosed but no lipid panel was obtained or discussed, leaving lipids (a core component of metabolic syndrome) and overall cardiovascular risk uncharacterized",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "Assessment documents 'Metabolic syndrome X' and new hypertension; labs list only A1c and a basic metabolic panel \u2014 no lipid values anywhere, and no lipid/statin discussion in the note or transcript"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-abnormal_result_not_addressed",
+   "topic": "tachycardia|heart rate|resting pulse",
+   "kind": "gap",
+   "trigger": "Resting heart rate of 100/min (tachycardia) was noted but never explained or worked up in a patient with new diastolic-predominant hypertension",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "abnormal_result_not_addressed",
+     "value": "Objective vitals 'HR 100/min'; transcript 'Heart rate's 100 today too' with no further evaluation or comment on cause"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-uninvestigated_symptom",
+   "topic": "sleep apnea|OSA|morning headache|snoring|sofa bed|sleep quality",
+   "kind": "gap",
+   "trigger": "Morning occipital headaches were attributed entirely to blood pressure, but the patient's obesity, tachycardia, and disrupted sleep on a sofa bed raise the possibility of obstructive sleep apnea, which was not screened for",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "Patient reports morning headaches and 'I sleep okay-ish on the famous sofa'; BMI 30.21, HR 100; doctor states 'morning headaches and high pressure often travel together' without considering sleep-disordered breathing"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-unmonitored_condition",
+   "topic": "anemia|CBC|hemoglobin|B12|monitoring",
+   "kind": "gap",
+   "trigger": "Anemia was called 'stable on current therapy' and B12 continued, but no CBC/hemoglobin was obtained this visit to confirm stability or verify the anemia is B12-responsive",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "unmonitored_condition",
+     "value": "Assessment 'Anemia... Stable on current therapy'; labs list a BMP but no hemoglobin/CBC; anemia status assessed only by symptom report"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-no_end_organ_assessment",
+   "topic": "hypertension|end organ|ECG|EKG|urine albumin|proteinuria",
+   "kind": "gap",
+   "trigger": "New hypertension with BP 141/100 was diagnosed without an ECG or urine albumin/protein assessment for hypertensive end-organ effects",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "no_end_organ_assessment",
+     "value": "New 'Essential hypertension' with BP confirmed 141/100; workup limited to BMP creatinine \u2014 no ECG or urinalysis/urine albumin documented"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-6-cancer_screening_gap",
+   "topic": "colorectal|colon cancer|colonoscopy|FIT|screening",
+   "kind": "preventive",
+   "trigger": "54-year-old man with first comprehensive visit in years; colorectal cancer screening was not addressed",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "Patient states 'you haven't had a proper physical in years'; no mention of colonoscopy, FIT, or any colorectal screening in note or transcript"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-7-cost_adherence_risk",
+   "topic": "income|cost|dental cost|healthy food access|financial barrier",
+   "kind": "gap",
+   "trigger": "Very low personal income may impede the dietary changes, dental care, and follow-up the plan depends on",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cost_adherence_risk",
+     "value": "Reported personal annual income $4,829; plan relies on buying/cooking fresh low-salt food, a dental cleaning ('haven't sat in a dentist's chair since... four years'), and borrowing a home BP cuff \u2014 no cost or resource assistance discussed"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-8-depression_screening_gap",
+   "topic": "depression|PHQ-9|grief|bereavement|mood",
+   "kind": "preventive",
+   "trigger": "Patient with recent bereavement, job loss, social isolation and endorsed low mood/worry was screened only with PHQ-2 (score 2); no full PHQ-9 done despite significant psychosocial burden",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "depression_screening_gap",
+     "value": "Active conditions include 'Social isolation' and 'Stress'; patient reports low mood 'several days' and mother died last fall; only PHQ-2 (2) and GAD-7 (3) obtained, treatment deferred"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "3a3a1f26-ed23-f65c-a7df-c96fac56f464": [
+  {
+   "id": "llm-0-undertreated_condition",
+   "topic": "migraine|prophylaxis|preventive|prevention|chronic",
+   "kind": "gap",
+   "trigger": "Chronic intractable migraine with ~2 disabling attacks weekly, but no migraine preventive (prophylactic) therapy offered or discussed",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Patient reports 'about two bad ones a week,' misses/pushes through work, relieved only by sleep in a dark room; plan lists only a headache log and return precautions, with abortive meds 'for when a headache gets really bad' as the sole treatment"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-uninvestigated_symptom",
+   "topic": "medication overuse|rebound|abortive|analgesic|migraine",
+   "kind": "gap",
+   "trigger": "Risk of medication-overuse headache not addressed given use of abortive/acute headache medication roughly twice weekly in a chronic migraine pattern",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "Patient keeps 'stuff for when a headache gets really bad' and has ~2 significant attacks/week; note reconciles meds but does not assess acute-med frequency or counsel on overuse"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-specialist_referral_gap",
+   "topic": "neurology|referral|intractable|migraine|refractory",
+   "kind": "gap",
+   "trigger": "Diagnosis labeled 'chronic intractable migraine' yet no neurology referral for refractory headache",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "specialist_referral_gap",
+     "value": "Active condition 'Chronic intractable migraine without aura'; plan keeps management in primary care with a log only, no specialist referral documented"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-depression_screening_gap",
+   "topic": "depression|PHQ|mood|screening",
+   "kind": "preventive",
+   "trigger": "No formal depression screening (e.g., PHQ-2/PHQ-9) despite multiple depression risk factors",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "depression_screening_gap",
+     "value": "Patient reports persistent fatigue, evening 'flatness,' short sleep (5-6h), significant financial stress, and new social isolation; only an informal verbal question about hopelessness was asked"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-uninvestigated_symptom",
+   "topic": "fatigue|tiredness|workup|thyroid|anemia",
+   "kind": "gap",
+   "trigger": "Persistent fatigue reported but not evaluated with any workup",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "Patient states he is 'persistently tired' and 'Tired a lot'; assessment attributes it to stress/short sleep without labs (e.g., CBC, thyroid) or further evaluation"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-unmonitored_condition",
+   "topic": "medication reconciliation|acute migraine|documentation|abortive",
+   "kind": "gap",
+   "trigger": "Current medication list documented as 'none' despite patient reporting he takes acute migraine medication",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "unmonitored_condition",
+     "value": "Patient says he keeps 'the stuff for when a headache gets really bad,' but CURRENT MEDICATIONS = none listed and none prescribed, leaving the acute regimen unspecified"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "7bd9e5b0-5d4b-f10d-9579-f4813faf9cdc": [
+  {
+   "id": "llm-0-undertreated_condition",
+   "topic": "covid|dexamethasone|corticosteroid|hypoxemia|oxygen",
+   "kind": "gap",
+   "trigger": "No corticosteroid (e.g., dexamethasone) documented for hypoxemic COVID-19 pneumonia, which is standard of care for patients requiring supplemental oxygen",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Confirmed SARS-CoV-2 pneumonia with SpO2 87% falling to 75.7% on room air requiring continuous oxygen by mask, yet the plan lists only oxygen, proning, and monitoring labs \u2014 no steroid ordered"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-undertreated_condition",
+   "topic": "covid|antiviral|remdesivir",
+   "kind": "gap",
+   "trigger": "No antiviral therapy (e.g., remdesivir) mentioned for a high-risk hospitalized COVID-19 patient",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "81-year-old with radiographic pneumonia and hypoxemia, positive NAA x2, but no antiviral agent appears in medications or plan"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-undertreated_condition",
+   "topic": "vte|thromboprophylaxis|anticoagulation|ddimer|covid",
+   "kind": "gap",
+   "trigger": "No VTE/thromboprophylaxis documented despite hospitalized COVID-19 with rising D-dimer and known prothrombotic state",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Plan notes 'this virus makes blood sticky' and orders coagulation monitoring, D-dimer trending upward (0.30 to 0.55 ug/mL), but no prophylactic anticoagulation is ordered"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-medication_condition_conflict",
+   "topic": "rosuvastatin|statin|renal|dose|ak\u0131",
+   "kind": "gap",
+   "trigger": "Rosuvastatin 40 mg continued in the setting of severe acute kidney injury",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "medication_condition_conflict",
+     "value": "Creatinine 2.66\u20132.97 mg/dL with MDRD GFR ~6\u201313 mL/min; rosuvastatin 40 mg is not recommended in severe renal impairment and no dose adjustment is documented"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-medication_condition_conflict",
+   "topic": "lisinopril|ace|potassium|hyperkalemia|renal",
+   "kind": "gap",
+   "trigger": "Lisinopril 20 mg continued with hyperkalemia and severe renal impairment",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "medication_condition_conflict",
+     "value": "Potassium 5.07 mmol/L and GFR ~11 mL/min while home lisinopril continued; plan states 'review daily' and 'adjust per lab trend' but drug not held despite high potassium and AKI"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-medication_condition_conflict",
+   "topic": "atenolol|betablocker|renal|bradycardia",
+   "kind": "gap",
+   "trigger": "Atenolol 50 mg continued in severe renal failure with admission bradycardia",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "medication_condition_conflict",
+     "value": "Atenolol is renally cleared and accumulates in renal impairment (GFR ~11); admission heart rate was 56.97/min"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-6-abnormal_result_not_addressed",
+   "topic": "bilirubin|hyperbilirubinemia|liver|hemolysis",
+   "kind": "gap",
+   "trigger": "Markedly elevated total bilirubin not acknowledged or investigated",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "abnormal_result_not_addressed",
+     "value": "Total bilirubin repeatedly 6.3\u201314.6 mg/dL with near-normal ALT/AST/ALP, yet the note does not mention or work up the hyperbilirubinemia"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-7-specialist_referral_gap",
+   "topic": "nephrology|aki|renal|referral|gfr",
+   "kind": "gap",
+   "trigger": "No nephrology involvement for severe AKI approaching dialysis-range GFR",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "specialist_referral_gap",
+     "value": "MDRD GFR estimates of 6.4\u201312.9 mL/min with creatinine ~2.7\u20133.0 and hyperkalemia; plan relies on daily labs and hydration without renal specialist consultation"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-8-uninvestigated_symptom",
+   "topic": "goals|advance care planning|code status|prognosis",
+   "kind": "gap",
+   "trigger": "No goals-of-care or code status discussion documented despite serious illness in an elderly patient",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "81-year-old with severe COVID pneumonia, desaturation to 75%, cardiac history; family asks 'how bad is this' and 'could this set off another heart attack,' but no advance care planning or resuscitation preferences recorded"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "b342f27e-56bc-08ac-347c-323279c0d595": [
+  {
+   "id": "llm-0-prenatal_supplementation_gap",
+   "topic": "folic|acid|prenatal|vitamin|supplement|neural|tube",
+   "kind": "preventive",
+   "trigger": "No prenatal vitamin or folic acid supplementation was prescribed or discussed at this initial prenatal visit",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "prenatal_supplementation_gap",
+     "value": "Current medications and prescribed-at-visit both list none; the note's medication review documents only occasional OTC analgesia and advises checking before starting anything new, with no folic acid or prenatal multivitamin mentioned despite an early confirmed viable pregnancy"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-depression_screening_gap",
+   "topic": "depression|mood|PHQ|perinatal|anxiety|screening",
+   "kind": "preventive",
+   "trigger": "No perinatal mood/depression screening documented at initial obstetric intake",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "depression_screening_gap",
+     "value": "Assessment and plan and transcript cover labs, ultrasound, UTI surveillance, and lifestyle counseling but include no PHQ or mood screening"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-undertreated_condition",
+   "topic": "UTI|recurrent|prophylaxis|suppressive|bacteriuria|urology",
+   "kind": "gap",
+   "trigger": "Recurrent UTI (several episodes/year) in pregnancy managed only with surveillance cultures; no consideration of suppressive prophylaxis or urology/MFM input discussed",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Patient reports at least a couple UTIs per year since her twenties and is her chief pregnancy concern; plan is surveillance cultures and treat-if-positive only"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-uninvestigated_symptom",
+   "topic": "fatigue|sleep|couch|rest|tiredness",
+   "kind": "gap",
+   "trigger": "Pronounced fatigue reported but no explicit assessment of sleep disruption from changed sleeping arrangement (couch)",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "Patient describes falling asleep on the couch and pronounced fatigue; clinician attributes fatigue to pregnancy without exploring sleep quality or the couch sleeping arrangement"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "6b716621-5454-68ec-2017-362939ab6f36": [
+  {
+   "id": "llm-0-cancer_screening_gap",
+   "topic": "cervical|pap|hpv|cancer|screening",
+   "kind": "preventive",
+   "trigger": "No cervical cancer screening (Pap/HPV) documented for this 47-year-old woman despite claim of being 'up to date'",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "Note states 'Continue routine age-appropriate screening' and physician says 'Screening-wise you are up to date,' but no Pap/HPV result or date is recorded this visit"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-cancer_screening_gap",
+   "topic": "breast|mammogram|cancer|screening",
+   "kind": "preventive",
+   "trigger": "No breast cancer screening (mammogram) documented for a 47-year-old woman",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "Annual exam with 'up to date' asserted verbally, but no mammography result or date appears anywhere in the encounter record"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-cancer_screening_gap",
+   "topic": "colorectal|colonoscopy|FIT|cologuard|cancer|screening",
+   "kind": "preventive",
+   "trigger": "No colorectal cancer screening documented despite patient being age 47 (screening recommended from age 45)",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "Patient is 47; note only says 'continue routine age-appropriate screening' with no colonoscopy, FIT, or stool DNA result recorded"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-abnormal_result_not_addressed",
+   "topic": "platelet|thrombocytosis|CBC|recheck",
+   "kind": "gap",
+   "trigger": "Platelet count 436.75 (above typical upper limit ~400) noted as 'higher end' but no repeat or follow-up planned",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "abnormal_result_not_addressed",
+     "value": "Physician stated 'platelets at the higher end of acceptable but nothing I am worried about' with no plan to recheck"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-specialist_referral_gap",
+   "topic": "sinusitis|ENT|otolaryngology|chronic|referral",
+   "kind": "gap",
+   "trigger": "Years of recurrent seasonal chronic sinusitis managed only symptomatically without ENT evaluation consideration",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "specialist_referral_gap",
+     "value": "Note documents chronic sinusitis 'behaving in its usual winter pattern' for years, managed with saline rinses only; no imaging or ENT referral discussed"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-medication_condition_conflict",
+   "topic": "leftover|antibiotics|medication|reconciliation|self-medication",
+   "kind": "gap",
+   "trigger": "Patient reports leftover antibiotics stored at home, a risk for inappropriate self-treatment; reconciliation deferred to next visit",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "medication_condition_conflict",
+     "value": "Physician says 'gather every bottle...including the leftover antibiotics I suspect are in a drawer' and patient confirms 'There is definitely a drawer'"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "966e9818-9cf6-8d71-74bc-36aef6643618": [
+  {
+   "id": "llm-0-abnormal_result_not_addressed",
+   "topic": "creatinine|kidney|renal|eGFR|elevated",
+   "kind": "gap",
+   "trigger": "Serum creatinine 1.32 mg/dL in a 22-year-old woman is above the typical reference range and suggests reduced renal function, yet the note only comments on the normal CBC and never mentions or addresses the creatinine.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "abnormal_result_not_addressed",
+     "value": "Creatinine [Mass/volume] in Blood = 1.32 mg/dL; note states 'blood count... looks fine' but no comment on the elevated creatinine."
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-undertreated_condition",
+   "topic": "prediabetes|metformin|pharmacologic|prevention",
+   "kind": "gap",
+   "trigger": "Persistent prediabetes with newly documented obesity and strong family history was managed with lifestyle counseling only; pharmacologic prevention (e.g., metformin) was not discussed or considered despite risk factors.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "A1c 6.24% 'persistent in the prediabetes range,' BMI 31.4, grandmother with diabetes; plan is lifestyle counseling and recheck only."
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-missing_diagnostic_workup",
+   "topic": "lipid|cholesterol|cardiovascular|screening",
+   "kind": "gap",
+   "trigger": "No lipid panel or cardiovascular risk assessment was obtained despite obesity and prediabetes, which are indications for lipid screening.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "BMI 31.4, prediabetes documented; labs include CMP and CBC but no lipid panel; plan contains no lipid or CVD risk evaluation."
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-cancer_screening_gap",
+   "topic": "cervical|pap|cancer screening|women",
+   "kind": "preventive",
+   "trigger": "Patient is a 22-year-old woman eligible for cervical cancer screening (Pap testing from age 21), but no cervical cancer screening was discussed or documented at this preventive visit.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "22-year-old woman presenting for general physical exam; no mention of Pap/cervical screening in note or transcript."
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  }
+ ],
+ "374e68b2-ee15-0852-cd48-3c7b6fd8e114": [
+  {
+   "id": "llm-0-unmonitored_condition",
+   "topic": "anemia|hemoglobin|CBC|iron|fatigue",
+   "kind": "gap",
+   "trigger": "Active anemia carried forward with a plan to 'continue longitudinal monitoring,' yet no CBC or hemoglobin was drawn at this visit; only a basic metabolic panel was obtained.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "unmonitored_condition",
+     "value": "Anemia listed as active condition; note states 'Continue longitudinal monitoring of anemia and fatigue trajectory'; labs this visit include BMP and A1c only, no hemoglobin/CBC."
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-uninvestigated_symptom",
+   "topic": "fatigue|tiredness|anemia|post-sepsis",
+   "kind": "gap",
+   "trigger": "Patient explicitly asked whether his ongoing tiredness is from anemia, lungs, or unemployment; clinician attributed it to a mix and deferred workup without any objective testing this visit.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "PT: 'The tiredness \u2014 is that the anemia, the lungs, or the unemployment?' DR: 'Probably a share of each... If the fatigue plateaus or gets worse... we look harder at it.'"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-missing_diagnostic_workup",
+   "topic": "ARDS|pulmonary|PFT|dyspnea|lung|pulmonology",
+   "kind": "gap",
+   "trigger": "Persistent exertional dyspnea on hills/stairs several months after ARDS, with no pulmonary function testing or pulmonology follow-up arranged.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "PT reports remaining 'exertionally limited on hills and stairs' post-ARDS; plan only says 'continue graduated activity' with no PFTs or specialist referral."
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-uninvestigated_symptom",
+   "topic": "back|pain|couch|sleep|housing|crowding",
+   "kind": "gap",
+   "trigger": "Low back ache with prolonged sitting was noted but its potential relationship to a changed sleeping arrangement in a crowded 6-person/3-bedroom home (possible sleeping on a couch) was not explored.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "PT rates back pain 1/10 'when I sit too long'; crowded housing '6 of us... three bedrooms'; contributing factor flags sleeping arrangement changed (couch)."
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-unmonitored_condition",
+   "topic": "kidney|creatinine|renal|AKI|septic shock",
+   "kind": "gap",
+   "trigger": "Creatinine 1.22 mg/dL after septic shock/AKI was labeled reassuring but no repeat renal function follow-up or timeline was specified beyond the 6-month general visit.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "unmonitored_condition",
+     "value": "'I always double-check kidneys after a septic shock episode'; creatinine 1.22 mg/dL; no dedicated renal recheck scheduled."
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "1ba8eeb9-bc93-7129-4390-0d2ddd560616": [
+  {
+   "id": "llm-0-undertreated_condition",
+   "topic": "depression|PHQ-9|antidepressant|treatment|moderately severe",
+   "kind": "gap",
+   "trigger": "Moderately severe depression (PHQ-9 of 17) received no active treatment beyond a self-help resource list; documented as 'stress' rather than a depressive disorder, and no antidepressant, formal therapy referral, or short-interval safety check between the 4-week window was arranged",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "PHQ-9 total 17 (moderately severe range), anhedonia and low mood most days since winter; plan was 'counseling resource list provided' and 'repeat PHQ-9 at 4-week follow-up' with 'nothing today unless you want it'"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-social_barrier_to_plan",
+   "topic": "therapy|counseling|reluctance|engagement|depression",
+   "kind": "gap",
+   "trigger": "Patient stated he is 'not a talk-about-it guy' and declined therapy, yet counseling is the sole depression intervention offered; without addressing this reluctance the plan is unlikely to be followed",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "social_barrier_to_plan",
+     "value": "'I'm not really a talk-about-it guy. Clearly.' \u2014 patient agreed only to review a list, not to engage a therapist"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-specialist_referral_gap",
+   "topic": "behavioral health|therapy referral|mental health|depression",
+   "kind": "gap",
+   "trigger": "No behavioral health referral was actually placed for moderately severe depression \u2014 only a resource list was handed over, leaving follow-through entirely to a reluctant patient",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "specialist_referral_gap",
+     "value": "Plan: 'Counseling resource list provided (including telehealth options); patient agreed to review' \u2014 contrast with the dental referral that was formally placed"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-uninvestigated_symptom",
+   "topic": "couch|sleeping arrangement|back pain|insomnia|sleep surface",
+   "kind": "gap",
+   "trigger": "A change in sleeping arrangement (couch) was not explored as a possible contributor to both the chronic low back pain flare and the initial insomnia driving the depressive picture",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "Patient's own account flags a changed sleeping arrangement ('couch'); he reports nightly initial insomnia and a back-pain flare, but sleeping surface was never discussed in the note or plan"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-uninvestigated_symptom",
+   "topic": "insomnia|sleep|falling asleep|sleep hygiene",
+   "kind": "gap",
+   "trigger": "Chronic initial insomnia ('falling asleep nearly every night') was attributed to depression and addressed only with generic sleep-hygiene advice; no dedicated sleep assessment despite it being both a depression driver and independent complaint",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "'Trouble falling asleep... nearly every night. My brain does release retrospectives at 1 a.m.' \u2014 plan only lists fixed wake time and morning light"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "73043f9e-3254-a1d3-aa45-b82f0fc6d502": [
+  {
+   "id": "llm-0-abnormal_result_not_addressed",
+   "topic": "elevated|hemoglobin|hematocrit|erythrocytosis|polycythemia",
+   "kind": "gap",
+   "trigger": "Hemoglobin 16.89 g/dL and hematocrit 47.59% are elevated for a woman, yet the note interpreted this as reassuring ('no sign of the old anemia, iron story looks closed') without considering possible erythrocytosis/polycythemia or dehydration.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "abnormal_result_not_addressed",
+     "value": "Hemoglobin 16.888 g/dL, Hematocrit 47.585%; note states 'no anemia today... continue routine monitoring.'"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-medication_condition_conflict",
+   "topic": "naproxen|nsaid|blood pressure|hypertension|renal",
+   "kind": "gap",
+   "trigger": "Regular as-needed naproxen (an NSAID) in a patient with borderline-elevated blood pressure and no clear renal/BP monitoring plan for NSAID effects.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "medication_condition_conflict",
+     "value": "Current med: naproxen 220 mg; BP 135/82; note says BP is 'a touch above perfect... we watch it' but does not link NSAID use to BP/renal risk."
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-cancer_screening_gap",
+   "topic": "colorectal|colonoscopy|FIT|cancer screening",
+   "kind": "preventive",
+   "trigger": "No documentation of colorectal cancer screening status for a 62-year-old patient.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "Preventive care section lists only influenza vaccine and negative mood/drug screens; no colorectal screening addressed."
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-cancer_screening_gap",
+   "topic": "breast|mammogram|cancer screening",
+   "kind": "preventive",
+   "trigger": "No documentation of breast cancer (mammography) screening status for a 62-year-old woman.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "No mammography or breast screening mentioned in note or transcript."
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-cancer_screening_gap",
+   "topic": "cervical|pap|hpv|cancer screening",
+   "kind": "preventive",
+   "trigger": "No documentation of cervical cancer screening status; tubal ligation does not remove need for Pap/HPV testing until age 65.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "History of tubal ligation noted; no cervical cytology/HPV screening addressed."
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-cancer_screening_gap",
+   "topic": "osteoporosis|bone density|dexa",
+   "kind": "preventive",
+   "trigger": "No osteoporosis/bone density screening addressed in a 62-year-old woman approaching typical screening age.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "No DEXA or bone health assessment mentioned."
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-6-social_barrier_to_plan",
+   "topic": "social isolation|caregiver burden|childcare|peer contact",
+   "kind": "gap",
+   "trigger": "Documented social isolation and heavy caregiving load (mornings for three grandchildren, daughter works nights) limit the patient's capacity to attend appointments like the dental referral and to maintain peer contact/self-care.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "social_barrier_to_plan",
+     "value": "'My world got small'; provides substantial childcare; limited social contact and social isolation documented; plan relies on scheduled peer contact and dental visit."
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-7-unmonitored_condition",
+   "topic": "blood pressure|hypertension|monitoring",
+   "kind": "gap",
+   "trigger": "Systolic BP 135 documented as above target but no home monitoring, follow-up BP check, or repeat measurement plan was arranged.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "unmonitored_condition",
+     "value": "BP 135/82; note: 'not medicine territory, but we watch it' with no concrete monitoring interval."
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "40cb7be2-9c26-6328-3aa0-71db4ed81e06": [
+  {
+   "id": "llm-0-prenatal_supplementation_gap",
+   "topic": "folic|acid|folate|prenatal|vitamin|neural|tube",
+   "kind": "preventive",
+   "trigger": "No folic acid or prenatal multivitamin documented for a first-trimester planned pregnancy; medication list shows only ferrous sulfate and B12",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "prenatal_supplementation_gap",
+     "value": "Current medications are ferrous sulfate and vitamin B12 injection; plan addresses iron/B12 for anemia and nausea counseling but never mentions folic acid or a prenatal vitamin for neural tube defect prevention"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-missing_diagnostic_workup",
+   "topic": "anemia|ferritin|iron|studies|b12|folate|mcv|etiology",
+   "kind": "gap",
+   "trigger": "Anemia etiology not established before starting both iron and B12; no iron studies/ferritin, B12 level, or folate level documented",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "CBC resulted showing anemia; ferrous sulfate started and first B12 injection administered empirically without documented ferritin, iron studies, B12, or folate levels or MCV interpretation"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-undertreated_condition",
+   "topic": "panic|anxiety|therapy|counseling|behavioral|health|referral",
+   "kind": "gap",
+   "trigger": "Active panic disorder with recurrent attacks (including one before this visit) is unmedicated with no behavioral health referral; treatment deferred until symptoms 'escalate'",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Patient reports several recent panic attacks, 'white-knuckling,' peri-visit panic episode; plan only arranges accommodations and 'discuss pregnancy-safe treatment options if symptoms escalate' with no therapy referral"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-depression_screening_gap",
+   "topic": "depression|perinatal|mood|epds|phq|screening",
+   "kind": "preventive",
+   "trigger": "No perinatal depression/anxiety screening documented in a pregnant patient with severe anxiety and reported ongoing stress",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "depression_screening_gap",
+     "value": "Patient with panic disorder and 'the last few months have been stressful'; no PHQ/EPDS or formal mood screening recorded at intake"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-specialist_referral_gap",
+   "topic": "scoliosis|anesthesia|labor|analgesia|physical|therapy|spine",
+   "kind": "gap",
+   "trigger": "Scoliosis with anticipated increased spinal load and labor/anesthesia implications, but no anesthesia or spine/PT referral initiated",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "specialist_referral_gap",
+     "value": "Plan notes scoliosis may worsen and to 'later' discuss labor positioning and analgesia; no proactive anesthesia consult or physical therapy referral arranged"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "74919836-2db2-2f73-d2cf-5287a180b0ff": [
+  {
+   "id": "llm-0-inappropriate_medication_elderly",
+   "topic": "metformin|hypoglycemia|a1c|glucose|overtreatment|diabetes",
+   "kind": "gap",
+   "trigger": "Metformin newly started in an 85-year-old whose HbA1c (5.45%) and fasting glucose (66.82 mg/dL) are already in the non-diabetic/hypoglycemic range, creating risk of symptomatic hypoglycemia with no clear glycemic indication",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "inappropriate_medication_elderly",
+     "value": "Plan: 'Start 24 hr metformin hydrochloride 500 mg ER daily'; HbA1c 5.45%, glucose 66.82 mg/dL, note 'fasting glucose low at 66.82 mg/dL today' and counseling to 'avoid skipping breakfast'"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-medication_condition_conflict",
+   "topic": "hydrochlorothiazide|hypotension|orthostatic|blood pressure|diuretic|falls",
+   "kind": "gap",
+   "trigger": "Hydrochlorothiazide added when today's blood pressure is already low at 107/58 (diastolic 58), raising risk of orthostatic hypotension, falls, and volume depletion in an 85-year-old",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "medication_condition_conflict",
+     "value": "Plan: 'Start hydrochlorothiazide 25 mg each morning'; BP 107/58, DBP 58; 'Monitor for orthostatic symptoms'"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-undertreated_condition",
+   "topic": "ldl|statin|atorvastatin|secondary prevention|high-intensity|cholesterol",
+   "kind": "gap",
+   "trigger": "Post-MI/ischemic heart disease patient with direct LDL 148.61 mg/dL remains on only moderate-intensity atorvastatin 20 mg; high-intensity statin is standard for secondary prevention but dose escalation was deferred",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "'Direct LDL 148.61 mg/dL, above goal for secondary prevention'; plan 'Consolidate to atorvastatin 20 mg nightly... Repeat lipid panel at follow-up before dose escalation'"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-unmonitored_condition",
+   "topic": "anemia|cbc|hemoglobin|bleeding|aspirin|workup",
+   "kind": "gap",
+   "trigger": "Active anemia carried forward with 'surveillance' only; no CBC obtained this visit despite ongoing gum bleeding and daily aspirin use that could contribute to blood loss",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "unmonitored_condition",
+     "value": "Anemia section: 'no new blood count today... Continue surveillance at next laboratory draw'; patient reports gum bleeding for months and takes aspirin 81 mg daily"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-uninvestigated_symptom",
+   "topic": "tachycardia|heart rate|metoprolol|beta blocker",
+   "kind": "gap",
+   "trigger": "Heart rate 96/min on metoprolol succinate 100 mg was not addressed; borderline tachycardia despite beta-blockade in a patient with ischemic heart disease went unremarked",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "Observations: Heart rate 96/min; metoprolol succinate ER 100 mg daily; note states 'Heart regular' with no comment on rate"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-uninvestigated_symptom",
+   "topic": "gum bleeding|gingivitis|aspirin|anemia|bleeding",
+   "kind": "gap",
+   "trigger": "Several months of gum bleeding attributed to gingivitis and referred to dental, but bleeding tendency in a patient on aspirin with known anemia was not evaluated for a systemic/hematologic contribution",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "'gum bleeding with brushing for several months'; 'Gingival erythema and edema... with friability'; on aspirin 81 mg; anemia present"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-6-cancer_screening_gap",
+   "topic": "pneumococcal|zoster|shingles|vaccine|immunization|elderly",
+   "kind": "preventive",
+   "trigger": "No documentation of pneumococcal or zoster vaccination status in an 85-year-old with diabetes and cardiac disease; only influenza was addressed",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "Health maintenance section documents only 'Influenza vaccine... administered today' with no mention of pneumococcal or shingles vaccination"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  }
+ ],
+ "be1b73f7-b0f0-0ca3-b24b-28369ce68943": [
+  {
+   "id": "llm-0-uninvestigated_symptom",
+   "topic": "depression|phq-9|low mood|neighborhood violence stress",
+   "kind": "gap",
+   "trigger": "PHQ-2 score of 2 and endorsed 'gray Sunday' low-mood days in context of chronic neighborhood-violence stress were not further explored with a full PHQ-9 or follow-up plan beyond return precautions",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "PHQ-2 total score 2; patient reports occasional brief low-mood days; living amid shootings and a recent nearby assault"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-social_barrier_to_plan",
+   "topic": "neighborhood safety|exercise barrier|violence|home workout|counseling referral",
+   "kind": "gap",
+   "trigger": "Chronic neighborhood violence restricts outdoor exercise to daylight and limits walking, directly undercutting the activity prescription central to the obesity plan; no indoor/alternative exercise option or mental-health support referral offered",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "social_barrier_to_plan",
+     "value": "'I time my runs for daylight now'; 'I run, when the weather and the neighborhood cooperate'; plan prescribes outdoor runs/walks"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-missing_diagnostic_workup",
+   "topic": "obesity|glucose|hba1c|prediabetes|diabetes screening",
+   "kind": "gap",
+   "trigger": "Obesity assessed with lipids but no fasting glucose or HbA1c ordered to screen for dysglycemia/prediabetes in an obese adult",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "BMI 31.45; plan addresses obesity with lipids only, no glucose or A1c documented"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-missing_diagnostic_workup",
+   "topic": "baseline labs|metabolic panel|new patient",
+   "kind": "gap",
+   "trigger": "No blood pressure context beyond single reading and no baseline metabolic/renal labs; obese new patient without prior records had limited baseline workup",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "First comprehensive visit since college; no CMP or other baseline labs documented"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-cancer_screening_gap",
+   "topic": "family history|hereditary risk|cancer screening",
+   "kind": "preventive",
+   "trigger": "Family history unknown and never assessed for hereditary cancer/cardiac risk; patient reports family not open about health, which was noted but not pursued (e.g., counseling to gather history)",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "'My family is not big on talking about health'; family history left blank"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  }
+ ],
+ "6d4fd363-1ddb-74f8-516f-2fdc861cb736": [
+  {
+   "id": "llm-0-no_end_organ_assessment",
+   "topic": "hypertension|baseline labs|electrolytes|renal function|creatinine|potassium|thiazide|ACE inhibitor",
+   "kind": "gap",
+   "trigger": "Triple antihypertensive therapy (lisinopril + amlodipine + hydrochlorothiazide) started with no baseline renal function or electrolyte panel documented",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "no_end_organ_assessment",
+     "value": "HTN treatment newly initiated with an ACE inhibitor and a thiazide; no basic metabolic panel, creatinine, or potassium ordered before or at this visit"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-missing_diagnostic_workup",
+   "topic": "hypertension|home BP|validated monitor|ambulatory monitoring|confirm diagnosis",
+   "kind": "gap",
+   "trigger": "Triple-drug HTN regimen started based on reported home readings from wife's unvalidated monitor while office BP was normal",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "Office BP 106/67; treatment justified by patient-reported 'one-fifty-something' on wife's machine with no validated/ambulatory confirmation"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-medication_condition_conflict",
+   "topic": "hypotension|triple therapy|lisinopril|amlodipine|hydrochlorothiazide|low BP",
+   "kind": "gap",
+   "trigger": "Three antihypertensives initiated simultaneously despite office BP of 106/67, risking symptomatic hypotension",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "medication_condition_conflict",
+     "value": "BP 106/67 today; all three agents (lisinopril, amlodipine, HCTZ) started at once taken together each morning"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-missing_diagnostic_workup",
+   "topic": "lipids|cholesterol|diabetes|A1c|glucose|cardiovascular risk|obesity",
+   "kind": "gap",
+   "trigger": "No lipid, glucose, or A1c screening in an obese, newly-treated hypertensive man to assess cardiovascular/metabolic risk",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "BMI 29.31/obesity coded plus new HTN; no lipid panel, fasting glucose, or HbA1c mentioned"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-depression_screening_gap",
+   "topic": "depression|PHQ-9|early morning waking|mood|sleep|rumination",
+   "kind": "preventive",
+   "trigger": "Early-morning waking with rumination and financial stress but only anxiety (GAD-7) screened; no depression screen documented",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "depression_screening_gap",
+     "value": "Patient reports 4 a.m. waking doing 'math in my head' a few times weekly; only GAD-7 (score 1) and AUDIT-C performed, no PHQ"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-cost_adherence_risk",
+   "topic": "cost|adherence|pharmacy|generic|unemployed|medication abandonment",
+   "kind": "gap",
+   "trigger": "Prior antihypertensive prescription abandoned at pharmacy due to cost; patient now unemployed and started on three medications",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cost_adherence_risk",
+     "value": "Patient: pharmacy said $40 'and I just... left it on the counter'; 'I ran out of everything months ago and stopped refilling' after insurance change and job loss"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "256bea3d-7833-e7f8-74b4-0e4f7e299c73": [
+  {
+   "id": "llm-0-cancer_screening_gap",
+   "topic": "cervical|pap|hpv|cancer|screening",
+   "kind": "preventive",
+   "trigger": "No cervical cancer screening (Pap/HPV) addressed for this 48-year-old woman at an annual exam",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "Annual/general exam with gynecologic history discussed (miscarriage, tubal ligation, regular menses) but no mention of cervical cytology status or ordering"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-cancer_screening_gap",
+   "topic": "breast|mammogram|cancer|screening",
+   "kind": "preventive",
+   "trigger": "No breast cancer screening (mammogram) discussed for a 48-year-old woman",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "Health maintenance section addresses flu vaccine and dental but does not mention mammography status"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-missing_diagnostic_workup",
+   "topic": "palpitations|thyroid|tsh|ecg|fluttering|chest",
+   "kind": "gap",
+   "trigger": "Intermittent fluttery chest sensation and anxiety symptoms attributed entirely to stress without thyroid or cardiac evaluation",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "Patient describes 'intermittent fluttery chest sensation accompanying worry'; assessment attributes to anxiety with no TSH or ECG considered"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-missing_diagnostic_workup",
+   "topic": "obesity|diabetes|a1c|glucose|lipid|metabolic",
+   "kind": "gap",
+   "trigger": "Obesity (BMI 30.57) without metabolic screening for diabetes/prediabetes or lipids",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "BMI 30.57 documented; plan sets activity goals but no glucose/A1c or lipid screening addressed"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-social_barrier_to_plan",
+   "topic": "income|food|insecurity|snap|social work|financial|layoff",
+   "kind": "gap",
+   "trigger": "Severe food/financial insecurity (household of 8 on ~$10,131/yr after job loss) not connected to social work or food/benefit resources",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "social_barrier_to_plan",
+     "value": "Patient laid off, partner's hours cut, 8 people in home, income $10,131; 'unemployment barely covers groceries for eight people' \u2014 only dental sliding-scale referral placed"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-uninvestigated_symptom",
+   "topic": "uti|recurrent|urinary|workup|prevention",
+   "kind": "gap",
+   "trigger": "Recurrent UTI history never evaluated for underlying cause despite recurrence over years",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "'Recurrent urinary tract infections historically'; plan states no testing indicated as asymptomatic, with no discussion of prior workup or prevention"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-6-undertreated_condition",
+   "topic": "intimate partner|abuse|safety|escalation|alcohol",
+   "kind": "gap",
+   "trigger": "IPV disclosure includes escalating behavior (wall punched twice, fear during alcohol-fueled episodes) but no proactive re-screening plan or partner alcohol involvement addressed beyond hotline card",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "'a wall got punched, twice maybe'; abuse occurs 'when he has been drinking'; plan provides hotline number and open-access return only"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "4c893b3e-df6f-a2f0-5d03-98714cbad61a": [
+  {
+   "id": "llm-0-abnormal_result_not_addressed",
+   "topic": "hemoglobin|hematocrit|polycythemia|erythrocytosis|elevated",
+   "kind": "gap",
+   "trigger": "Elevated hemoglobin (17.44 g/dL) and hematocrit (48.1%) were labeled 'normal' and not investigated, despite being at/above the upper limit; in an obese patient with chronic sleep complaints and morning grogginess this can signal chronic hypoxemia (e.g., obstructive sleep apnea) or polycythemia",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "abnormal_result_not_addressed",
+     "value": "Hemoglobin 17.437 g/dL, Hematocrit 48.097%; note states 'Blood counts all normal... nothing brewing' with no further evaluation"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-missing_diagnostic_workup",
+   "topic": "sleep|apnea|OSA|snoring|daytime|grogginess",
+   "kind": "gap",
+   "trigger": "No screening for obstructive sleep apnea despite obesity, lifelong difficult sleep, and daytime grogginess at a visit billed as a 'sleep review'; management focused only on sleep hygiene and diphenhydramine reduction",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "BMI 30.08, 'lifelong difficulty with sleep onset,' 'morning grogginess he offsets with coffee,' elevated hemoglobin \u2014 no OSA questionnaire or referral"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-missing_diagnostic_workup",
+   "topic": "diabetes|glucose|hba1c|prediabetes|obesity",
+   "kind": "gap",
+   "trigger": "No diabetes/glucose screening (fasting glucose or HbA1c) in an obese patient with an elevated office blood pressure reading",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "BMI 30.08, BP 143/75; lab panel includes lipids and CBC but no glucose or A1c"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-cancer_screening_gap",
+   "topic": "colorectal|colonoscopy|FIT|cancer|screening",
+   "kind": "preventive",
+   "trigger": "No colorectal cancer screening addressed for a 52-year-old at a comprehensive exam with 'last comprehensive visit several years ago'",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "Age 52, 'last comprehensive visit was several years ago'; no mention of colonoscopy, FIT, or stool testing"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  }
+ ],
+ "1be66dc9-cf0b-cb78-e88e-ada9a9a5405b": [
+  {
+   "id": "llm-0-undertreated_condition",
+   "topic": "diabetes|antidiabetic|metformin|insulin|hyperglycemia|glucose-lowering",
+   "kind": "gap",
+   "trigger": "Symptomatic type 2 diabetes with no glucose-lowering medication on the list or prescribed at admission",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Patient reports constant thirst, polyphagia, nocturia 4-5x/night, fatigue and paresthesias 'consistent with poorly controlled diabetes,' yet current medications and 'prescribed at this visit: none' contain no metformin, insulin, or other antidiabetic agent"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-missing_diagnostic_workup",
+   "topic": "a1c|hemoglobin|glucose|diabetes-control",
+   "kind": "gap",
+   "trigger": "No A1c or glucose measurement obtained despite symptomatic hyperglycemia",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "No observations recorded this visit and no labs ordered; symptoms 'tell me your sugars have been running higher than we want' but no A1c/fingerstick value documented to guide therapy"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-undertreated_condition",
+   "topic": "acei|arb|diabetic-nephropathy|renoprotection|proteinuria",
+   "kind": "gap",
+   "trigger": "Diabetic kidney disease and hypertension without an ACE inhibitor or ARB",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Active conditions include 'Disorder of kidney due to diabetes mellitus' and 'Essential hypertension,' but medications list only metoprolol for blood pressure and no renoprotective ACEi/ARB"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-uninvestigated_symptom",
+   "topic": "word-finding|cognitive|stroke|tia|neurology|aphasia",
+   "kind": "gap",
+   "trigger": "New word-finding difficulty since hospitalization not evaluated for cerebrovascular cause",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "Patient 'endorses mild word-finding difficulty since hospitalization' with 'occasional word-finding pauses'; she is on clopidogrel and nitroglycerin (vascular disease), yet plan only refers to speech therapy cognitive-communication work, no neurologic imaging or evaluation"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-depression_screening_gap",
+   "topic": "depression|phq|mood-screening",
+   "kind": "preventive",
+   "trigger": "No depression screening despite risk factors",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "depression_screening_gap",
+     "value": "75-year-old woman living alone, new functional decline, daytime napping, fatigue, and reduced stamina after hospitalization; no PHQ or mood assessment documented"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-undertreated_condition",
+   "topic": "statin|intensity|lipid|atorvastatin|cholesterol",
+   "kind": "gap",
+   "trigger": "Possibly insufficient statin intensity for diabetic patient with vascular disease",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "On simvastatin 20 mg (moderate-intensity) with diabetes, hypertriglyceridemia, metabolic syndrome and clopidogrel/nitroglycerin suggesting established cardiovascular disease"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-6-unmonitored_condition",
+   "topic": "anemia|cbc|iron|b12|ckd-anemia",
+   "kind": "gap",
+   "trigger": "Anemia managed with B12 injections without documented cause evaluation, in a patient with CKD",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "unmonitored_condition",
+     "value": "Anemia treated with 'continue vitamin B12 injectable per established schedule' but no CBC, iron studies, or CKD-related anemia assessment; new hand paresthesias could also relate to B12 status"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-7-no_end_organ_assessment",
+   "topic": "retinopathy|eye-exam|diabetes-complication",
+   "kind": "gap",
+   "trigger": "No diabetic retinopathy eye exam addressed despite diabetic microvascular complications",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "no_end_organ_assessment",
+     "value": "Patient has diabetic kidney disease and peripheral neuropathy indicating microvascular damage, but no dilated eye/retinopathy screening mentioned"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-8-social_barrier_to_plan",
+   "topic": "lives-alone|diet-adherence|home-support|meal-preparation",
+   "kind": "gap",
+   "trigger": "Lives alone with distant caregiver and self-reported inability to maintain diabetic diet at home",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "social_barrier_to_plan",
+     "value": "'She lives alone; her daughter lives forty minutes away'; patient states 'cooking a proper diabetic meal for one person is a sorry business' \u2014 a barrier to sustained glucose control after discharge"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "c2cbc55e-34dc-73c6-5ee4-cabe0c40fc32": [
+  {
+   "id": "llm-0-prenatal_supplementation_gap",
+   "topic": "folic|acid|prenatal|vitamin|supplement",
+   "kind": "preventive",
+   "trigger": "No prenatal vitamin or folic acid supplementation started or prescribed at the initial prenatal visit",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "prenatal_supplementation_gap",
+     "value": "Current medications 'none listed' and 'Prescribed at this visit: none'; patient reports 'Nothing regular at the moment.' Dietary iron counseling given but no folic acid/prenatal vitamin mentioned in plan or transcript"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-undertreated_condition",
+   "topic": "aspirin|preeclampsia|prophylaxis|hypertension",
+   "kind": "gap",
+   "trigger": "No low-dose aspirin started for preeclampsia prophylaxis despite multiple high-risk factors (age 43, chronic hypertension, obesity, metabolic syndrome)",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Plan for hypertension lists only preeclampsia symptom education and BP monitoring; no aspirin prophylaxis discussed despite chronic HTN, obesity, and advanced maternal age"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-unmonitored_condition",
+   "topic": "blood|pressure|hypertension|baseline|reading",
+   "kind": "gap",
+   "trigger": "No baseline blood pressure value recorded at this visit despite longstanding untreated essential hypertension in a pregnancy",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "unmonitored_condition",
+     "value": "Observations this visit section is blank; objective notes only 'no peripheral edema'; hypertension described as 'currently untreated by her report' with no BP reading documented"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-undertreated_condition",
+   "topic": "hypertension|antihypertensive|treatment|medication",
+   "kind": "gap",
+   "trigger": "Longstanding essential hypertension remains untreated with no antihypertensive plan or reassessment of therapy during pregnancy",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "'Longstanding hypertension, currently untreated by her report'; patient states 'I've been meaning to get back on top of the blood pressure'; plan does not address starting pregnancy-safe therapy"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-missing_diagnostic_workup",
+   "topic": "gestational|diabetes|glucose|A1c|early|screening",
+   "kind": "gap",
+   "trigger": "No early gestational diabetes screening (HbA1c or glucose tolerance test) ordered despite prediabetes, obesity, and family history warranting first-trimester screening",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "Plan for prediabetes/metabolic syndrome relies on a 'urine diabetes screen collected today; repeat glucose evaluation planned later'; no early blood glucose/A1c test ordered for a high-risk patient"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-undertreated_condition",
+   "topic": "anemia|iron|supplement|ferritin",
+   "kind": "gap",
+   "trigger": "Known anemia not treated with iron supplementation; managed only with dietary advice pending hemogram",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Anemia plan: 'Hemogram obtained today to characterize current status' and 'Dietary counseling on iron-rich foods'; no iron supplement initiated in a pregnant patient with documented anemia"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-6-depression_screening_gap",
+   "topic": "depression|anxiety|mood|perinatal|screening",
+   "kind": "preventive",
+   "trigger": "No formal depression/anxiety screening performed despite significant pregnancy-related anxiety, prior miscarriage, and IPV history",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "depression_screening_gap",
+     "value": "Patient reports being 'scrambled,' 'significant anxiety about this pregnancy,' and prior loss; plan offers 'ongoing emotional support' but no standardized mood/depression screening documented"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "e1a7c2af-1e7f-300b-44f6-012ae75bbab1": [
+  {
+   "id": "llm-0-unmonitored_condition",
+   "topic": "obesity|weight|BMI|energy drinks|metabolic|diet",
+   "kind": "gap",
+   "trigger": "Obesity (BMI 30+) listed as an active condition but not assessed or addressed in this encounter beyond the dental context; heavy daily energy-drink intake compounds cardiometabolic risk yet no weight, diet, or metabolic follow-up plan was made",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "unmonitored_condition",
+     "value": "Active conditions include 'Body mass index 30+ - obesity'; patient reports 'heavy daily energy-drink consumption' and is 'otherwise well by his report,' with no weight counseling, metabolic labs, or PCP follow-up documented"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-missing_diagnostic_workup",
+   "topic": "energy drinks|sugar|obesity|cardiometabolic|glucose|lipids",
+   "kind": "gap",
+   "trigger": "Heavy daily energy-drink consumption in an obese patient counseled only for its dental (sugar/acid) effect; no assessment of associated cardiometabolic risk (glucose, lipids, blood pressure) or referral back to primary care for it",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "'He reports heavy daily energy-drink consumption, typically sipped across long shifts'; counseling was limited to 'stop prolonged sipping of energy drinks' for oral health"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-depression_screening_gap",
+   "topic": "depression|PTSD|mental health|deployment|veteran|screening",
+   "kind": "preventive",
+   "trigger": "Active-duty serviceman with a mid-service deployment; no mental health / depression / PTSD screening addressed or referred, despite deployment history being a recognized risk factor",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "depression_screening_gap",
+     "value": "'active-duty serviceman... a deployment in the middle of it'; 'Serving in military service (finding)' active condition; no behavioral health screening documented"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-unmonitored_condition",
+   "topic": "medication review|reconciliation",
+   "kind": "gap",
+   "trigger": "'Medication review due' is listed as an active situation but no medication reconciliation was performed or documented at this visit",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "unmonitored_condition",
+     "value": "Active conditions include 'Medication review due (situation)'; current medications 'none listed' and no review addressed in note or transcript"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-missing_diagnostic_workup",
+   "topic": "preventive care|screening|primary care|catch-up",
+   "kind": "gap",
+   "trigger": "Patient has had no routine dental or apparent general preventive care for several years; general adult preventive/screening care (beyond dental) is not addressed or referred back to the on-post clinic",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "'referred for dental care after several years without routine dental treatment'; 'dental readiness piece where I went red'; encounter confined to gingival treatment"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  }
+ ],
+ "a3292ec4-64b6-20fc-480e-39e1f7f51e50": [
+  {
+   "id": "llm-0-prenatal_supplementation_gap",
+   "topic": "folic|acid|prenatal|vitamin|supplement",
+   "kind": "preventive",
+   "trigger": "No prenatal vitamin or folic acid supplementation was discussed or prescribed at this first prenatal visit",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "prenatal_supplementation_gap",
+     "value": "Detailed initial prenatal plan covers labs, nausea, opioids, and activity, but contains no mention of folic acid or a prenatal multivitamin; 'PRESCRIBED AT THIS VISIT: none'"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-depression_screening_gap",
+   "topic": "depression|mood|screening|EPDS|PHQ|anxiety",
+   "kind": "preventive",
+   "trigger": "Patient reports substantial baseline daily stress but no validated perinatal mood/depression screening tool was administered",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "depression_screening_gap",
+     "value": "'endorses substantial baseline daily stress'; plan only states 'Screen mood and stress at each visit' without a documented instrument (e.g., EPDS/PHQ) at intake"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-missing_diagnostic_workup",
+   "topic": "urine|drug|screen|toxicology|opioid",
+   "kind": "gap",
+   "trigger": "No baseline urine drug screen ordered despite near-daily use of two opioids in pregnancy",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "Near-daily hydrocodone and tramadol use documented; prenatal urine testing included culture, protein, and glucose but no toxicology screen"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-cost_adherence_risk",
+   "topic": "cost|insurance|unemployed|affordability|access",
+   "kind": "gap",
+   "trigger": "Patient is unemployed due to chronic pain, raising affordability concerns for a planned pain-specialist-led taper, physical therapy, and frequent prenatal visits",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cost_adherence_risk",
+     "value": "'not currently working because of pain'; plan requires pain specialist coordination, pregnancy-safe physical therapy, and every-four-week visits"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-specialist_referral_gap",
+   "topic": "MFM|maternal-fetal|addiction|referral|high-risk",
+   "kind": "gap",
+   "trigger": "No consideration of maternal-fetal medicine or addiction/OB anesthesia referral for a high-risk pregnancy complicated by chronic opioid use",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "specialist_referral_gap",
+     "value": "Chronic near-daily opioid use with neonatal opioid withdrawal risk; plan relies only on outpatient pain specialist coordination without MFM or addiction-medicine involvement"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-uninvestigated_symptom",
+   "topic": "influenza|flu|vaccine|immunization",
+   "kind": "gap",
+   "trigger": "No documented plan for influenza vaccination, recommended in any trimester of pregnancy",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "Vaccination/immunity checks limited to rubella and varicella antibody testing; no influenza vaccine offered or documented"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  }
+ ],
+ "b504cdf2-e13b-979e-9c4a-95456823e3dd": [
+  {
+   "id": "llm-0-inappropriate_medication_elderly",
+   "topic": "meperidine|opioid|elderly|beers|neurotoxic|confusion",
+   "kind": "gap",
+   "trigger": "Meperidine started in a 76-year-old for back/hip pain; meperidine is explicitly on the Beers list to avoid in older adults due to a neurotoxic metabolite that causes confusion, sedation, and seizure risk, and accumulates with reduced renal function common in this age group.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "inappropriate_medication_elderly",
+     "value": "'Started meperidine hydrochloride 50 mg tablets for more severe pain' in a 76-year-old; note acknowledges risk of 'sedation, confusion, or unsteadiness given her age' yet still selects meperidine."
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-medication_condition_conflict",
+   "topic": "naproxen|nsaid|elderly|renal|gi-bleed|gastroprotection",
+   "kind": "gap",
+   "trigger": "Naproxen (NSAID) started in a 76-year-old \u2014 NSAIDs carry substantial GI bleed, renal, and cardiovascular risk in the elderly, and no gastroprotection or renal-function baseline is documented.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "medication_condition_conflict",
+     "value": "'Started naproxen sodium 220 mg tablets for baseline pain control' in a 76-year-old with obesity; no mention of PPI cover or renal assessment."
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-missing_diagnostic_workup",
+   "topic": "back pain|vertebral|compression fracture|spine imaging|osteoporosis",
+   "kind": "gap",
+   "trigger": "New deep bony low back pain radiating to both hips in a woman with osteoporosis and kyphotic posture was treated symptomatically without imaging to rule out vertebral compression fracture as the cause.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "'Bone-deep aching pain in the setting of osteoporosis' with 'kyphotic posture' and 'tenderness over the lumbar paraspinal region'; plan lists only analgesia and PT, no spine imaging."
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-undertreated_condition",
+   "topic": "osteoporosis|bisphosphonate|vitamin D|bone therapy|calcium",
+   "kind": "gap",
+   "trigger": "Osteoporosis is managed only with 'dietary calcium'; no vitamin D supplementation or pharmacologic bone therapy (e.g., bisphosphonate) is addressed despite documented osteoporosis, kyphosis, probable undernutrition, and high fall/fracture risk.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Osteoporosis plan lists only 'Dietary calcium emphasis through meal planning'; no vitamin D or anti-resorptive/anabolic therapy mentioned."
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-missing_diagnostic_workup",
+   "topic": "malnutrition|albumin|prealbumin|nutrition labs|vitamin D",
+   "kind": "gap",
+   "trigger": "Probable longstanding protein-calorie undernutrition is suspected but no nutritional laboratory assessment (e.g., albumin/prealbumin, vitamin D level) is documented to characterize its severity.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "'raising concern for longstanding under-nutrition' and 'probable protein under-nutrition'; plan is dietitian consult only, no labs."
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-depression_screening_gap",
+   "topic": "depression|mood|screening|PHQ|isolation|bereavement",
+   "kind": "preventive",
+   "trigger": "Multiple depression risk factors (profound fatigue, social isolation, bereavement, fear, becoming sedentary, history of abuse) but no mood screening performed.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "depression_screening_gap",
+     "value": "'profound fatigue,' 'lives alone with minimal social contact; her sister died two years ago,' 'grown fearful... increasingly sedentary'; psychosocial plan addresses isolation but not mood screening."
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-6-specialist_referral_gap",
+   "topic": "dental|tooth loss|dentures|oral health|referral",
+   "kind": "gap",
+   "trigger": "Extensive tooth loss forcing soft, contracted, one-sided-chewing diet contributing to undernutrition, but no dental referral or evaluation for dentures/oral rehabilitation is offered \u2014 only food texture is modified.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "specialist_referral_gap",
+     "value": "'Multiple missing teeth with chewing limited to one side,' meals 'contracted... toward small, soft foods'; plan modifies meal texture but no dental evaluation."
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-7-undertreated_condition",
+   "topic": "hyperlipidemia|statin|lipid-lowering|cholesterol",
+   "kind": "gap",
+   "trigger": "Documented hyperlipidemia with no lipid-lowering pharmacotherapy in the medication list; managed only via diet at this encounter.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Active condition 'Hyperlipidemia'; current medications list only naproxen and meperidine; plan addresses lipids only through dietitian meal balancing."
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-8-cancer_screening_gap",
+   "topic": "mammogram|colorectal|cancer screening|breast",
+   "kind": "preventive",
+   "trigger": "76-year-old woman with no documentation of breast or colorectal cancer screening status.",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "No screening history noted; multiple chronic conditions listed but no cancer screening addressed."
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  }
+ ],
+ "d57244c4-df7d-9ce7-7878-38361fc0087b": [
+  {
+   "id": "llm-0-missing_diagnostic_workup",
+   "topic": "lipid|cholesterol|cardiovascular|ascvd|statin",
+   "kind": "gap",
+   "trigger": "No lipid panel or cardiovascular risk assessment performed despite prediabetes, overweight (BMI 28), and strong family history",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "Labs this visit included A1c, BMP, and CBC but no lipid panel; note states 'no abnormalities requiring action' without any cholesterol testing for a 52-year-old man with prediabetes and family history of diabetes complications"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-cancer_screening_gap",
+   "topic": "colorectal|colonoscopy|fit|cancer|screening",
+   "kind": "preventive",
+   "trigger": "No colorectal cancer screening addressed for a 52-year-old",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "Patient is 52 with 'first complete physical in roughly two years'; no mention of colonoscopy, FIT, or any colorectal screening in the plan"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-uninvestigated_symptom",
+   "topic": "sinusitis|sinus|ENT|imaging|CT",
+   "kind": "gap",
+   "trigger": "Longstanding chronic sinus pressure and headaches for years never imaged or referred",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "Patient reports 'longstanding sinus pressure across the forehead with morning congestion and intermittent headaches rated up to 4/10, unchanged for years'; plan is only saline rinses with no imaging or ENT referral considered"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-specialist_referral_gap",
+   "topic": "diabetes|prevention|program|DPP|dietitian|prediabetes",
+   "kind": "gap",
+   "trigger": "No referral to a structured Diabetes Prevention Program for prediabetes",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "specialist_referral_gap",
+     "value": "Prediabetes managed with brief lifestyle counseling only; A1c 5.83% with strong family history (mother with amputation), no referral to DPP or dietitian"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-uninvestigated_symptom",
+   "topic": "bruxism|jaw|clenching|dental|nightguard",
+   "kind": "gap",
+   "trigger": "Jaw clenching/bruxism and muscle tension noted but not addressed or referred",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "Patient reports 'clenching my jaw at my desk' and tight shoulders; plan addresses stress generally but offers no dental/bruxism evaluation despite fluoride gel use"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-social_barrier_to_plan",
+   "topic": "social|isolation|loneliness|referral|support",
+   "kind": "gap",
+   "trigger": "Social isolation plan depends entirely on patient self-initiating a bowling league without referral or support resources",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "social_barrier_to_plan",
+     "value": "Social isolation documented as a formal problem; plan is only 'Patient plans to join a Saturday bowling league' with no social work referral or structured support given loneliness and limited social contacts"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "25fb1227-d194-b15e-e099-7cffcd6081ec": [
+  {
+   "id": "llm-0-duplicate_prescription",
+   "topic": "opioid|duplicate|oxycodone|hydrocodone|tramadol|polypharmacy|deprescribe",
+   "kind": "gap",
+   "trigger": "Multiple overlapping opioids continued simultaneously without consolidation \u2014 oxycodone ER (OxyContin), oxycodone/acetaminophen (Percocet), tramadol, and hydrocodone ER \u2014 accumulated from different prescribers",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "duplicate_prescription",
+     "value": "Med list includes OxyContin 10mg ER, Percocet, tramadol 50mg, and hydrocodone 10mg ER; note plans to 'continue current analgesics' and consolidate into a written schedule but does not deprescribe redundant agents"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-medication_condition_conflict",
+   "topic": "naproxen|NSAID|anemia|GI bleed|colon",
+   "kind": "gap",
+   "trigger": "Naproxen (NSAID) continued in a patient with known anemia and advanced GI malignancy, posing GI bleeding risk that could worsen anemia",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "medication_condition_conflict",
+     "value": "Reconciled meds include naproxen sodium 220mg; active conditions include Anemia (disorder) and colon malignancy; plan continues current analgesics"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-inappropriate_medication_elderly",
+   "topic": "tramadol|elderly|Beers|opioid|seizure",
+   "kind": "gap",
+   "trigger": "Tramadol continued in a 75-year-old alongside other opioids \u2014 serotonergic and seizure-threshold-lowering, flagged on Beers criteria, with additive CNS effects",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "inappropriate_medication_elderly",
+     "value": "75-year-old woman with tramadol 50mg on reconciled list plus multiple other opioids"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-medication_condition_conflict",
+   "topic": "simvastatin|statin|hospice|deprescribe|hyperlipidemia",
+   "kind": "gap",
+   "trigger": "Simvastatin continued in a patient on comfort-focused hospice care for end-stage cancer, where statins offer no meaningful benefit and are candidates for deprescribing",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "medication_condition_conflict",
+     "value": "Reconciled meds include simvastatin 10mg for hyperlipidemia; patient admitted to hospice with comfort-only goals"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-undertreated_condition",
+   "topic": "constipation|opioid|laxative|bowel regimen",
+   "kind": "gap",
+   "trigger": "No prophylactic bowel regimen/laxative prescribed despite high opioid burden and slowing bowel movements; plan relies only on monitoring and prune juice",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Note states 'monitor bowel function at every visit given opioid burden; encourage fluids' and patient reports 'slower' BMs, but no laxative/stool softener prescribed"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-medication_condition_conflict",
+   "topic": "amoxicillin|antibiotic|leftover|disposal",
+   "kind": "gap",
+   "trigger": "Leftover amoxicillin-clavulanate from a prior dental course remains in the home without disposal guidance, risking inappropriate self-administration",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "medication_condition_conflict",
+     "value": "Reconciled meds include 'amoxicillin 250mg/clavulanate 125mg remaining from a recent dental course' with no plan to discontinue or discard"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "693a049b-0fd5-c1af-a6ab-e31c329f2891": [
+  {
+   "id": "llm-0-medication_condition_conflict",
+   "topic": "clopidogrel|antiplatelet|GI bleeding|anemia|colon cancer",
+   "kind": "gap",
+   "trigger": "Clopidogrel continued in a patient whose anemia was driven by a bleeding colon malignancy; ongoing antiplatelet therapy risks worsening tumor-related GI bleeding and anemia-related fatigue, which conflicts with comfort goals",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "medication_condition_conflict",
+     "value": "Active conditions list Anemia and Polyp/malignant neoplasm of colon; note states illness 'declared itself through progressive anemia'; clopidogrel 75 mg continued with only future deprescribing contemplated"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-undertreated_condition",
+   "topic": "comfort kit|breakthrough pain|PRN analgesic|abdominal pain|opioid",
+   "kind": "gap",
+   "trigger": "No anticipatory or breakthrough comfort medications (e.g., PRN analgesic for abdominal pain, agent for dyspnea/nausea) were prescribed at hospice admission despite current abdominal discomfort and anticipated symptom progression",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "PRESCRIBED AT THIS VISIT: none; patient reports 'dull, heavy lower abdominal discomfort' with plan only to 'escalate through the on-call line' and no scheduled or PRN analgesia in the medication list"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-medication_condition_conflict",
+   "topic": "simvastatin|statin|deprescribing|hospice|pill burden",
+   "kind": "gap",
+   "trigger": "Simvastatin (long-term preventive statin with no comfort benefit) continues to add pill burden in a terminally ill hospice patient; deprescribing was only deferred to the future rather than reassessed now",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "medication_condition_conflict",
+     "value": "Simvastatin 20 mg continued; note identifies statin as 'first candidate for future deprescribing' but keeps it, and symptom control/comfort is the stated goal"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-social_barrier_to_plan",
+   "topic": "caregiver|respite|night support|aide|burnout",
+   "kind": "gap",
+   "trigger": "Sole caregiver (wife) is anxious about nights and patient declined aide support; caregiver burnout/night-time crisis could destabilize the home care plan",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "social_barrier_to_plan",
+     "value": "'Wife is sole caregiver and anxious about nights'; aide support 'offered and declined'; patient/wife note nights are 'the caregiver's chief worry'"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ],
+ "5e93dd7e-1639-0886-8d0e-80ac11f2785c": [
+  {
+   "id": "llm-0-unmonitored_condition",
+   "topic": "anemia|CBC|iron|workup",
+   "kind": "gap",
+   "trigger": "Anemia is listed as an active condition but is never addressed, worked up, or monitored during this admission \u2014 no labs, no evaluation of cause, no plan",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "unmonitored_condition",
+     "value": "Active conditions include 'Anemia (disorder)' yet the assessment/plan contains no mention of anemia; note states 'No numeric vital signs or laboratory values recorded'"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-undertreated_condition",
+   "topic": "statin|lipid|hypertriglyceridemia|cardiovascular|ASCVD",
+   "kind": "gap",
+   "trigger": "65-year-old diabetic with hypertriglyceridemia and metabolic syndrome is on no lipid-lowering (statin) therapy despite guideline indication for statin in diabetics this age",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "undertreated_condition",
+     "value": "Medications: only metformin 500 mg ER; hypertriglyceridemia and metabolic syndrome 'addressed through the consistent-carbohydrate...diet' only, no pharmacotherapy"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-depression_screening_gap",
+   "topic": "depression|PHQ-9|bereavement|mood|screening",
+   "kind": "preventive",
+   "trigger": "Significant bereavement, social isolation, tearfulness, and being 'overwhelmed' to the point of stopping self-care, yet no formal depression screening (e.g., PHQ-9) performed",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "depression_screening_gap",
+     "value": "Patient 'tearful at moments,' 'marked social isolation,' sister/confidante died two years ago, 'so tired of managing it all...I sort of stopped'; plan lists social services but no mood screening"
+    }
+   ],
+   "priority": 0.9,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-no_end_organ_assessment",
+   "topic": "diabetes|nephropathy|urine albumin|creatinine|kidney",
+   "kind": "gap",
+   "trigger": "No renal/nephropathy assessment (urine albumin-creatinine ratio, creatinine) documented for poorly controlled type 2 diabetes",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "no_end_organ_assessment",
+     "value": "'No numeric vital signs or laboratory values recorded in the admission dataset'; diabetes plan omits renal screening"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-4-uninvestigated_symptom",
+   "topic": "neuropathy|monofilament|paresthesia|sensory testing",
+   "kind": "gap",
+   "trigger": "Symptomatic peripheral paresthesias for months not objectively evaluated with monofilament/vibration testing; only 'light-touch grossly intact' noted",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "uninvestigated_symptom",
+     "value": "'Tingling of the hands and feet...predominantly nocturnal'; exam only 'Light-touch sensation grossly intact'; plan is daily foot inspection without neuropathy testing"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-5-unmonitored_condition",
+   "topic": "blood pressure|hypertension|vitals|metabolic syndrome",
+   "kind": "gap",
+   "trigger": "No blood pressure or vital signs recorded on admission despite metabolic syndrome, obesity, and diabetes \u2014 hypertension component not assessed",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "unmonitored_condition",
+     "value": "'No numeric vital signs or laboratory values recorded in the admission dataset'"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-6-cancer_screening_gap",
+   "topic": "mammogram|colorectal|cervical|cancer screening",
+   "kind": "preventive",
+   "trigger": "65-year-old woman with no documentation of breast, cervical, or colorectal cancer screening status",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cancer_screening_gap",
+     "value": "No screening history mentioned anywhere in the encounter; multiple gaps in preventive care implied by prolonged self-neglect"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  }
+ ],
+ "01573895-dbf5-29c6-4ef9-cd09aecc51f6": [
+  {
+   "id": "llm-0-missing_diagnostic_workup",
+   "topic": "diabetes|glucose|hba1c|metabolic|prediabetes|screening",
+   "kind": "gap",
+   "trigger": "No glucose or HbA1c screening despite obesity history and markedly low HDL, which together suggest metabolic syndrome and elevated diabetes risk",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "missing_diagnostic_workup",
+     "value": "Active conditions list 'Body mass index 30+ - obesity'; HDL 29.55 mg/dL; lipid panel obtained but no fasting glucose or HbA1c ordered this visit"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": false,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-1-abnormal_result_not_addressed",
+   "topic": "hdl|cholesterol|cardiovascular|ascvd|risk",
+   "kind": "gap",
+   "trigger": "Very low HDL (29.55 mg/dL) documented but no formal cardiovascular risk stratification performed; managed with lifestyle advice only",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "abnormal_result_not_addressed",
+     "value": "Note under 'Low HDL cholesterol' plans only aerobic activity and recheck at next annual visit, with no ASCVD risk assessment"
+    }
+   ],
+   "priority": 0.3,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-2-social_barrier_to_plan",
+   "topic": "anxiety|counseling|therapy|adherence|follow-up",
+   "kind": "gap",
+   "trigger": "Patient is ambivalent about the counseling referral for moderate anxiety and only 'not saying no,' so the most effective element of the anxiety plan may not happen",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "social_barrier_to_plan",
+     "value": "GAD-7 of 12; patient: 'I do not know... Let me look at it. I am not saying no'; no medication started, counseling is the primary intervention"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  },
+  {
+   "id": "llm-3-cost_adherence_risk",
+   "topic": "cost|financial|dental|counseling|access",
+   "kind": "gap",
+   "trigger": "Significant financial strain may prevent follow-through on counseling and dental care even at sliding-scale clinics",
+   "evidence": [
+    {
+     "source": "llm_discovery",
+     "field": "cost_adherence_risk",
+     "value": "Wife's hours cut, single-income household of three, income $46,526; dental care skipped for years because it 'kept losing the budget vote'"
+    }
+   ],
+   "priority": 0.6,
+   "resolved_by": null,
+   "verifiable_from_record": true,
+   "plan_verbs": null
+  }
+ ]
+}

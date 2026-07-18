@@ -79,15 +79,26 @@ def render_delivered(
     return Panel(Group(*rows), title=f"delivered ({n})", border_style="green")
 
 
-def run_live(patient_id: str, speed: float = 8.0, client=None, console: Console | None = None) -> dict:
+def run_live(
+    patient_id: str,
+    speed: float = 8.0,
+    client=None,
+    console: Console | None = None,
+    use_cache: bool = False,
+) -> dict:
     """Same three building blocks as agent.py (detect -> resolve -> deliver),
     but hooked into a rich.Live display per utterance instead of returning
     only a final result. Kept separate from agent.run_encounter() because a
     live UI needs to render intermediate state; agent.py stays the headless
-    orchestrator eval.py drives."""
+    orchestrator eval.py drives.
+
+    use_cache defaults to False here -- this is the demo path, so detection
+    runs live against the chart. The trade is ~45s of dead air before the
+    transcript starts replaying; warm the cache and pass use_cache=True only
+    for rehearsal."""
     client = client or anthropic.Anthropic()
     rec = chart.record_for(patient_id)
-    candidates = detect.run_all(rec, client=client)
+    candidates = detect.run_all(rec, client=client, use_cache=use_cache)
 
     # stable display order, captured once -- resolve.py zeroes priority on
     # resolution, so sorting live by priority would make a candidate jump to
