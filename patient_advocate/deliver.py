@@ -109,18 +109,24 @@ def ground(client, survivors: list[Candidate]) -> list[Candidate]:
 
     payload = [{"id": c.id, "trigger": c.trigger, "evidence": c.evidence} for c in survivors]
     prompt = (
-        "For each candidate below, decide whether its evidence genuinely "
-        "supports asking the patient about it -- the evidence must cite a "
-        "specific datum (a value, a diagnosis, a coverage fact), not a vague "
-        "trigger with nothing to point to. Mark grounded=false for anything "
-        "that doesn't hold up.\n\n"
+        "Each candidate below was proposed by a deterministic rule, not by "
+        "you -- your only job is to check whether its evidence array backs "
+        "up its trigger with real, specific data (a value, a diagnosis, a "
+        "coverage fact, a computed boolean), not whether the underlying "
+        "clinical or eligibility reasoning is one you'd have made yourself. "
+        "Mark grounded=false only when the evidence is empty, vague, or "
+        "doesn't actually contain the fact the trigger claims -- not because "
+        "you'd want additional data the rule didn't have access to.\n\n"
         f"{json.dumps(payload, indent=2)}"
     )
     response = client.messages.create(
         model=MODEL,
         max_tokens=2048,
         temperature=1,
-        thinking={"type": "disabled"},
+        # adaptive, not disabled -- this is a borderline judgment call
+        # (does the evidence really support the trigger), and disabled
+        # thinking produced run-to-run flip-flops on close cases
+        thinking={"type": "adaptive"},
         output_config={"format": {"type": "json_schema", "schema": GROUND_SCHEMA}},
         messages=[{"role": "user", "content": prompt}],
     )

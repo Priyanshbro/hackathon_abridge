@@ -80,6 +80,9 @@ def coverage_awareness(rec: dict) -> Candidate | None:
                     "field": "insurance.item.benefit.copay",
                     "value": specialist_item["benefit"][0]["allowedMoney"]["value"],
                 },
+                # deterministic, already computed above -- surfaced as its own
+                # evidence item so Gate B doesn't have to trust the trigger text
+                {"source": "transcript", "field": f"mentions_{specialist}", "value": False},
             ]
             return Candidate(
                 id=f"coverage-{specialist}",
