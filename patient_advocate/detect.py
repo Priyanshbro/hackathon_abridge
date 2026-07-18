@@ -1,5 +1,7 @@
 from __future__ import annotations
+import dataclasses
 import json
+import pathlib
 from dataclasses import dataclass
 
 import chart
@@ -108,43 +110,27 @@ def coverage_awareness(rec: dict) -> Candidate | None:
     return None
 
 
-# --- fill these in ---
-
-def bp_control(rec: dict) -> Candidate | None:
-    """BP >=140/90 -> stage 2."""
-    raise NotImplementedError
-
-
-def a1c_threshold(rec: dict) -> Candidate | None:
-    """5.7-6.4 prediabetes, >=6.5 diabetes."""
-    raise NotImplementedError
-
-
-def wearable_delta(rec: dict) -> Candidate | None:
-    """Sleep / RHR / steps shift beyond threshold in window. Uses
-    chart.wearable_for(patient_id) -- only Elias has fixture data."""
-    raise NotImplementedError
-
-
-def transcript_clue(rec: dict) -> Candidate | None:
-    """Lifestyle/exposure cue in patient's own words (sofa bed, shift
-    work, new med) that the doctor never picks up on."""
-    raise NotImplementedError
-
-
-def cost_adherence_risk(rec: dict) -> Candidate | None:
-    """Prior cost/coverage disruption + new prescriptions today + no
-    written cost contingency. See PLAN.md for the 4-step build."""
-    raise NotImplementedError
-
-
-# transcript_clue and wearable_delta are deliberately ABSENT. They became
-# prompt inputs (clues.py), not generators -- Python finds the cue, the model
-# does the abductive reasoning. See clues.py for the measurement.
+# DELETED, deliberately -- bp_control, a1c_threshold, cost_adherence_risk,
+# transcript_clue, wearable_delta.
+#
+# transcript_clue / wearable_delta became prompt inputs (clues.py): Python
+# finds the cue, the model does the abductive reasoning.
+#
+# The other three were dropped once the LLM proved it covers them:
+#   - cost_adherence_risk fired on Julius in 4 of 4 runs, so the
+#     reliability argument for a deterministic version is gone.
+#   - bp_control / a1c_threshold would emit findings that are not gaps. On
+#     Elias the model reported no_end_organ_assessment rather than "BP is
+#     141/100" -- correctly, because the doctor had already diagnosed and
+#     treated it. A deterministic rule would push that non-gap into the K=3
+#     budget.
+#   - The "they anchor the taxonomy" argument died when GAP_TYPES became a
+#     fixed list independent of the generators.
+#
+# A deterministic generator now has to earn its place with computation the
+# model genuinely cannot do (eGFR arithmetic against a cutoff, say). None of
+# the deleted three qualified.
 GENERATORS = [
-    bp_control,
-    a1c_threshold,
-    cost_adherence_risk,
     coverage_awareness,
 ]
 
@@ -295,12 +281,47 @@ def _detection_context(rec: dict) -> str:
     )
 
 
-def run_all(rec: dict, client=None) -> list[Candidate]:
+CACHE_PATH = pathlib.Path(__file__).parent.parent / "data" / "detection_cache.json"
+
+
+def _cache_load() -> dict:
+    if CACHE_PATH.exists():
+        return json.loads(CACHE_PATH.read_text())
+    return {}
+
+
+def _cache_store(cache: dict) -> None:
+    CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    CACHE_PATH.write_text(json.dumps(cache, indent=1))
+
+
+def run_all(rec: dict, client=None, use_cache: bool = True) -> list[Candidate]:
     """Deterministic generators always; LLM discovery when a client is given.
-    The LLM is the primary detector -- the generators cover exact computation
-    and anchor the taxonomy. Without a client this returns the deterministic
-    subset only, which is what the no-cost eval ablation uses."""
+
+    Detection is CACHED per patient, for two reasons. First, it is a pre-visit
+    step -- the agent reads the chart before the patient walks in, so running
+    it once and reusing it is architecturally correct, not a shortcut. Second,
+    the eval depends on it: LLM detection varies run to run (the OSA insight
+    on Elias fired in 1 of 5 unprompted runs), so a suppression ON/OFF
+    ablation over freshly-detected candidates would measure model variance
+    instead of the gates. Both arms must see an identical candidate set.
+
+    Pass use_cache=False to force a fresh detection.
+    """
     out = [c for gen in GENERATORS for c in [gen(rec)] if c is not None]
-    if client is not None:
-        out.extend(discover(rec, client))
+    if client is None:
+        return out
+
+    pid = rec["metadata"]["patient_id"]
+    cache = _cache_load() if use_cache else {}
+    if pid in cache:
+        out.extend(Candidate(**c) for c in cache[pid])
+        return out
+
+    discovered = discover(rec, client)
+    out.extend(discovered)
+    if use_cache:
+        cache = _cache_load()
+        cache[pid] = [dataclasses.asdict(c) for c in discovered]
+        _cache_store(cache)
     return out
