@@ -1,11 +1,27 @@
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
 
+import chart
 from detect import Candidate
 
 MODEL = "claude-sonnet-5"
 K_BUDGET = 3
+
+HOSPICE_SNF_KEYWORDS = ("hospice", "skilled nursing", "snf", "nursing facility", "nursing home")
+GOALS_OF_CARE_KINDS = {"referral", "preventive"}
+GOALS_OF_CARE_TRIGGER_KEYWORDS = ("screening", "specialist", "referral")
+
+
+@dataclass
+class DeliveredItem:
+    id: str
+    question: str  # spoken to the clinician -- clinical only, never coverage/cost
+    evidence: list[dict]
+    scope: str  # in_scope | referral | barrier
+    context: str | None = None  # patient-facing subtext (e.g. coverage) -- never asked aloud
+
 
 GROUND_SCHEMA = {
     "type": "object",
@@ -38,9 +54,10 @@ PHRASE_SCHEMA = {
                 "properties": {
                     "id": {"type": "string"},
                     "question": {"type": "string"},
-                    "evidence": {"type": "string"},
+                    "scope": {"type": "string", "enum": ["in_scope", "referral", "barrier"]},
+                    "context": {"type": ["string", "null"]},
                 },
-                "required": ["id", "question", "evidence"],
+                "required": ["id", "question", "scope", "context"],
                 "additionalProperties": False,
             },
         }
@@ -48,6 +65,33 @@ PHRASE_SCHEMA = {
     "required": ["questions"],
     "additionalProperties": False,
 }
+
+
+def is_goals_of_care_context(rec: dict) -> bool:
+    """Hospice or SNF admission -- deterministic gate on Encounter.class +
+    serviceProvider/visit_title. Cheap, explainable, checked first."""
+    if chart.encounter_class(rec) == "HH":
+        return True
+    text = (chart.visit_title(rec) + " " + chart.service_provider(rec)).lower()
+    return any(k in text for k in HOSPICE_SNF_KEYWORDS)
+
+
+def goals_of_care_guard(candidates: list[Candidate], rec: dict) -> list[Candidate]:
+    """Step 0. Drop preventive/referral candidates outright for hospice/SNF
+    patients -- suggesting cancer screening to an end-stage hospice patient
+    is the output that sinks a demo in front of clinicians. Not restricted
+    to candidates explicitly tagged kind='referral'/'preventive': also
+    catches anything whose trigger text reads as a screening or specialist
+    suggestion, since not every generator will tag kind consistently."""
+    if not is_goals_of_care_context(rec):
+        return candidates
+
+    def is_preventive_or_referral(c: Candidate) -> bool:
+        if c.kind in GOALS_OF_CARE_KINDS:
+            return True
+        return any(k in c.trigger.lower() for k in GOALS_OF_CARE_TRIGGER_KEYWORDS)
+
+    return [c for c in candidates if not is_preventive_or_referral(c)]
 
 
 def filter_survivors(candidates: list[Candidate]) -> list[Candidate]:
@@ -58,15 +102,12 @@ def filter_survivors(candidates: list[Candidate]) -> list[Candidate]:
 def ground(client, survivors: list[Candidate]) -> list[Candidate]:
     """Gate B: one batched call over all survivors. Each candidate must
     cite a specific datum from its own evidence list or it gets dropped.
-    Deterministic, no thinking -- this is a check, not open-ended
-    reasoning."""
+    Deterministic in spirit -- thinking disabled, this is a check, not
+    open-ended reasoning."""
     if not survivors:
         return []
 
-    payload = [
-        {"id": c.id, "trigger": c.trigger, "evidence": c.evidence}
-        for c in survivors
-    ]
+    payload = [{"id": c.id, "trigger": c.trigger, "evidence": c.evidence} for c in survivors]
     prompt = (
         "For each candidate below, decide whether its evidence genuinely "
         "supports asking the patient about it -- the evidence must cite a "
@@ -93,27 +134,36 @@ def budget(survivors: list[Candidate], k: int = K_BUDGET) -> list[Candidate]:
     return sorted(survivors, key=lambda c: c.priority, reverse=True)[:k]
 
 
-def phrase(client, survivors: list[Candidate]) -> list[dict]:
-    """One call. Patient's voice, first person, <=25 words each, each
-    carrying its evidence line. Returns [{"id", "question", "evidence"}, ...]
-    in the same order as `survivors`."""
+def phrase(client, survivors: list[Candidate]) -> list[DeliveredItem]:
+    """One call. Patient's voice, first person, <=25 words, purely
+    clinical -- a doctor cannot answer "is this covered," so coverage/cost
+    never becomes part of the spoken question. Also does scope routing
+    (in_scope | referral | barrier) in the same call -- no extra cost.
+    Returns DeliveredItem list in survivor order."""
     if not survivors:
         return []
 
-    payload = [
-        {"id": c.id, "trigger": c.trigger, "evidence": c.evidence}
-        for c in survivors
-    ]
+    payload = [{"id": c.id, "trigger": c.trigger, "evidence": c.evidence} for c in survivors]
     prompt = (
-        "Turn each candidate below into a question the patient could ask "
-        "their own doctor, in the patient's voice, first person, plain "
-        "language, at most 25 words. Then write a one-line evidence note "
-        "explaining what grounds the question (cite the specific datum).\n\n"
+        "For each candidate below, produce:\n"
+        "- question: what the patient could ask their own doctor, in the "
+        "patient's voice, first person, plain language, at most 25 words. "
+        "This must be a purely clinical question the doctor can actually "
+        "answer -- never ask the doctor to confirm insurance coverage, "
+        "copay, or cost; a doctor cannot answer that.\n"
+        "- scope: 'in_scope' if the clinician in front of the patient can "
+        "act on this directly, 'referral' if it genuinely needs a "
+        "specialist, 'barrier' if it is a cost/access/social obstacle.\n"
+        "- context: an optional one-line patient-facing note, only when the "
+        "evidence includes a coverage_271 entry (copay, payer, referral "
+        "requirement) -- state it plainly for the patient's own reference. "
+        "null if there is no such evidence. Never fold this into the "
+        "question.\n\n"
         f"{json.dumps(payload, indent=2)}"
     )
     response = client.messages.create(
         model=MODEL,
-        max_tokens=1024,
+        max_tokens=1536,
         temperature=1,
         thinking={"type": "disabled"},
         output_config={"format": {"type": "json_schema", "schema": PHRASE_SCHEMA}},
@@ -121,10 +171,26 @@ def phrase(client, survivors: list[Candidate]) -> list[dict]:
     )
     text = next(b.text for b in response.content if b.type == "text")
     by_id = {q["id"]: q for q in json.loads(text)["questions"]}
-    return [by_id[c.id] for c in survivors if c.id in by_id]
+
+    items = []
+    for c in survivors:
+        q = by_id.get(c.id)
+        if q is None:
+            continue
+        items.append(
+            DeliveredItem(
+                id=c.id,
+                question=q["question"],
+                evidence=c.evidence,
+                scope=q["scope"],
+                context=q.get("context"),
+            )
+        )
+    return items
 
 
-def deliver(client, candidates: list[Candidate]) -> list[dict]:
+def deliver(client, candidates: list[Candidate], rec: dict) -> list[DeliveredItem]:
+    candidates = goals_of_care_guard(candidates, rec)
     survivors = filter_survivors(candidates)
     survivors = ground(client, survivors)
     survivors = budget(survivors)

@@ -8,7 +8,9 @@ import chart
 class Candidate:
     id: str
     topic: str  # for resolution matching -- "|"-delimited keywords, e.g. "cost|afford|dollar"
-    kind: str  # gap | score | drug_disease | clue | wearable
+    kind: str  # gap | score | drug_disease | clue | wearable | referral | preventive
+    # referral/preventive matter specifically to deliver.py's goals-of-care
+    # guard, which drops them outright for hospice/SNF encounters
     trigger: str  # human-readable why
     evidence: list[dict]  # [{source, field, value, date}] -- must be verifiable
     priority: float
@@ -82,7 +84,7 @@ def coverage_awareness(rec: dict) -> Candidate | None:
             return Candidate(
                 id=f"coverage-{specialist}",
                 topic=specialist,
-                kind="clue",
+                kind="referral",
                 trigger=f"active condition ({label}) maps to {specialist}, never discussed",
                 evidence=evidence,
                 priority=0.5,

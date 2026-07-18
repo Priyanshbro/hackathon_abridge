@@ -64,3 +64,15 @@ def observations(rec: dict) -> list[dict]:
 
 def medication_requests(rec: dict) -> list[dict]:
     return rec["encounter_fhir"]["related_resources"].get("MedicationRequest", [])
+
+
+def encounter_class(rec: dict) -> str:
+    return rec["encounter_fhir"]["encounter"].get("class", {}).get("code", "")
+
+
+def service_provider(rec: dict) -> str:
+    return rec["encounter_fhir"]["encounter"].get("serviceProvider", {}).get("display", "")
+
+
+def visit_title(rec: dict) -> str:
+    return rec["metadata"].get("visit_title", "")

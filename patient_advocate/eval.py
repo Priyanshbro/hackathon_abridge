@@ -55,17 +55,18 @@ def ablation(patient_ids: list[str]) -> dict:
     }
 
 
-def check_groundedness(candidates: list[detect.Candidate], delivered: list[dict]) -> dict:
+def check_groundedness(candidates: list[detect.Candidate], delivered: list) -> dict:
     """Deterministic -- verify each delivered question's own candidate
-    actually has non-empty, valued evidence. No LLM judge, no noise."""
+    actually has non-empty, valued evidence. No LLM judge, no noise.
+    `delivered` is a list of deliver.DeliveredItem."""
     by_id = {c.id: c for c in candidates}
     results = []
     for q in delivered:
-        c = by_id.get(q["id"])
+        c = by_id.get(q.id)
         ok = c is not None and len(c.evidence) > 0 and all(
             e.get("value") not in (None, "") for e in c.evidence
         )
-        results.append({"id": q["id"], "grounded": ok})
+        results.append({"id": q.id, "grounded": ok})
     n_ok = sum(1 for r in results if r["grounded"])
     return {"results": results, "rate": n_ok / len(results) if results else 1.0}
 
