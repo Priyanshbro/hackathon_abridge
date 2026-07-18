@@ -851,7 +851,7 @@
     "encounter_id": "4b4735a2-ee12-ec86-c1c9-c610cc6ef8ab",
     "source": "mocked-271-eligibility-v1",
     "synthetic": true,
-    "note": "Mock payer eligibility response (X12 271 equivalent, rendered as FHIR). Not derived from any real payer or transaction.",
+    "note": "Mock payer eligibility response (X12 271 equivalent, rendered as FHIR). Not derived from any real payer or transaction. Includes a cardiology specialist-visit benefit line for the coverage_awareness demo case.",
     "insurance_status": {
       "value": "Medicaid",
       "source": "observed",
@@ -976,6 +976,35 @@
                   },
                   "allowedMoney": {
                     "value": 1250,
+                    "currency": "USD"
+                  }
+                }
+              ]
+            },
+            {
+              "category": {
+                "coding": [
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/ex-benefitcategory",
+                    "code": "88",
+                    "display": "Specialist office visit (cardiology)"
+                  }
+                ]
+              },
+              "excluded": false,
+              "authorizationRequired": true,
+              "description": "PCP referral required for specialist visits under this plan.",
+              "benefit": [
+                {
+                  "type": {
+                    "coding": [
+                      {
+                        "code": "copay"
+                      }
+                    ]
+                  },
+                  "allowedMoney": {
+                    "value": 30,
                     "currency": "USD"
                   }
                 }
@@ -1592,7 +1621,7 @@
     "encounter_id": "6d4fd363-1ddb-74f8-95dd-b53404f1e107",
     "source": "mocked-271-eligibility-v1",
     "synthetic": true,
-    "note": "Mock payer eligibility response (X12 271 equivalent, rendered as FHIR). Not derived from any real payer or transaction.",
+    "note": "Mock payer eligibility response (X12 271 equivalent, rendered as FHIR). Not derived from any real payer or transaction. Includes a cardiology specialist-visit benefit line for the coverage_awareness demo case.",
     "insurance_status": {
       "value": "Private insurance",
       "source": "observed",
@@ -1717,6 +1746,35 @@
                   },
                   "allowedMoney": {
                     "value": 750,
+                    "currency": "USD"
+                  }
+                }
+              ]
+            },
+            {
+              "category": {
+                "coding": [
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/ex-benefitcategory",
+                    "code": "88",
+                    "display": "Specialist office visit (cardiology)"
+                  }
+                ]
+              },
+              "excluded": false,
+              "authorizationRequired": false,
+              "description": "No referral required; must use an in-network specialist.",
+              "benefit": [
+                {
+                  "type": {
+                    "coding": [
+                      {
+                        "code": "copay"
+                      }
+                    ]
+                  },
+                  "allowedMoney": {
+                    "value": 60,
                     "currency": "USD"
                   }
                 }
