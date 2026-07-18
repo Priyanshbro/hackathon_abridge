@@ -74,10 +74,40 @@ delivery.
 
 ---
 
-## Item 2 — deterministic layer (`detect.py`, 1.0h)
+## Item 2 — detection: LLM-primary, deterministic spine (`detect.py`, 1.0h)
 
-Pure Python. No LLM. Each generator emits candidates with **structured evidence**,
-which is what makes groundedness checkable later.
+**Measured on all 25 encounters before committing to this design** (`gap_compare.py`,
+Opus 4.8, $2.01, results in `data/gap_comparison.xlsx`):
+
+| | Deterministic rules | Opus 4.8 |
+|---|---|---|
+| Total gaps | 45 | **198** |
+| Mean / encounter | 1.8 | **7.92** |
+| Encounters with 0 gaps | **3** | 0 |
+
+On Elias the model found *both* deterministic gaps under different names and added
+seven more. Three were hand-verified against raw FHIR and all three were real: anemia
+on B12 with no CBC drawn, resting tachycardia 100/min never explained, and
+**hydrochlorothiazide prescribed twice at one encounter** (the only true duplicate in
+the cohort). It also produced the OSA insight — *"morning occipital headaches...
+without considering obstructive sleep apnea"* — from the transcript alone, with no
+wearable data.
+
+So: **LLM-primary for breadth.** Deterministic keeps two jobs it is strictly better at:
+
+1. **Exact computation and thresholds** — eGFR, cutoffs, arithmetic. The LLM was
+   explicitly forbidden from computing values it was not given, and that stays. This is
+   the 14%-recall finding; it has not changed.
+2. **A stable taxonomy.** The unconstrained LLM run produced **185 distinct type names
+   for 198 gaps** (`abnormal_finding_not_addressed`, `abnormal_lab_followup`,
+   `abnormal_creatinine_not_addressed` = one concept, three labels). That breaks dedup,
+   aggregation, and the eval. **Fix: constrain `type` to an `enum`** in the JSON schema —
+   the 10 deterministic types plus ~10 more (cancer screening, prenatal supplementation,
+   medication duplication, unmonitored condition, uninvestigated symptom, social barrier).
+   LLM breadth, stable vocabulary.
+
+Each candidate carries **structured evidence**, which is what makes groundedness
+checkable later.
 
 ```python
 @dataclass
@@ -163,12 +193,69 @@ the residue is what the patient actually needs.
 
 Triggered on stream end, or on a closing cue (`any questions`, `see you`, `follow up`).
 
+0. **Goals-of-care guard (first, deterministic).** This cohort has 2 hospice and 3 SNF
+   admissions. Suggesting colorectal screening to an end-stage colon cancer patient on
+   hospice is the output that sinks a demo in front of clinicians. Gate on
+   `Encounter.class` + hospice/SNF `serviceProvider` and drop all preventive and
+   referral candidates outright. Cheap; say it out loud to judges.
 1. **Filter** — drop resolved candidates.
 2. **Gate B — grounding** (one batched LLM call over all survivors): each question must
    cite a specific datum or it dies. Batched, so it is one call, not N.
-3. **Gate C — budget**: hard cap `K = 3`, strict priority ordering.
-4. **Phrase** — one call, patient's voice, first person, <=25 words each, each carrying
-   its evidence line.
+3. **Scope routing** — see below. Folds into the same call as ranking/phrasing.
+4. **Gate C — budget**: hard cap `K = 3`, strict priority ordering.
+5. **Phrase** — patient's voice, first person, <=25 words.
+
+### Scope routing — the selection axis
+
+Ranking by a hand-tuned priority float is arbitrary. The real axis is **can the
+clinician in front of the patient actually resolve this?** Care context comes from a
+triple available on every encounter: `Encounter.class` (AMB/IMP/HH), `visit_type`
+(SNOMED), and `serviceProvider.display` (e.g. "PRIMARY CARE MEDICINE AND PEDIATRICS",
+"FIRST PSYCHIATRIC PLANNERS", "NEW ENGLAND HOSPICE II"). No `Practitioner` resource is
+in the bundle, so there is no NPI/specialty lookup — the triple is the signal.
+
+Scope classification is *knowledge* work, so it rides in the existing ranking/phrasing
+LLM call. **No extra calls.**
+
+| Scope | Archetype | Elias example |
+|---|---|---|
+| in scope | ask now | thiazide/glucose, lipid panel, missing CBC, duplicate HCTZ, HTN intensity |
+| warrants referral | ask for a referral | OSA -> sleep specialist |
+| barrier | ask about access | Julius's pharmacy cost |
+
+**Do not over-refer.** Scope is not binary — PCPs routinely order home sleep apnea
+tests. Default to in-scope; route to referral only when the gap genuinely needs
+specialist capability. "Get a referral for your lipid panel" is the failure mode.
+
+### Coverage is SUBTEXT, never the question
+
+**A doctor does not know the patient's copay.** Asking them "is this covered?" is
+unanswerable, wastes visit time, and reads as naive to any clinician judging this.
+
+So every delivered item separates the two:
+
+```python
+@dataclass
+class DeliveredItem:
+    question: str          # spoken to the clinician - clinical only
+    evidence: list[dict]   # what it is grounded in
+    scope: str             # in_scope | referral | barrier
+    context: str | None    # patient-facing subtext - NEVER asked aloud
+```
+
+Rendered:
+
+> **Ask:** "Could my headaches be sleep apnea — should I see a sleep specialist?"
+> *Your plan: specialist visit $40 copay, no referral required, in-network.*
+
+The context line answers the patient's unspoken question ("can I afford to say yes if
+they suggest it?") without making the clinician field an insurance query. Coverage comes
+from the mock 271 via a deterministic benefit-line lookup.
+
+**271 scope note:** an X12 271 returns *medical* benefits — office-visit copay,
+deductible, OOP max. Pharmacy benefits are a separate PBM carve-out and drug-level cost
+needs an NCPDP real-time benefit check, **not** a 271. So the 271 is correct for
+referral cost and **must not** be used to answer Julius's pharmacy question.
 
 ### LLM usage — now trivially cheap
 
@@ -237,10 +324,12 @@ Terminal, not web — faster to build, screen-records well, no web stack.
 | 16:30–16:50 | record 1-min video, submit |
 
 **There is no slack. Cut order if behind:**
-1. UI degrades to coloured stdout (costs nothing in judging)
+1. **Wearable** — cut first. Opus found the OSA insight from the transcript alone, so
+   the wearable is corroboration, not the source. Frees ~35 min.
 2. Whisper loop drops entirely — demo the replay
-3. Wearable drops to a static note
-4. **Never cut the eval.** It is the differentiator.
+3. UI degrades to coloured stdout (costs nothing in judging)
+4. **Never cut the eval, the scope routing, or the goals-of-care guard.** The eval is
+   the differentiator; the other two are what make the output clinically credible.
 
 Eval is scheduled before UI on purpose: it runs headless, so if the day collapses
 you want eval + stdout, not a pretty UI with no numbers.
