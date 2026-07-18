@@ -249,12 +249,24 @@ def discover(rec: dict, client) -> list[Candidate]:
     wearable = chart.wearable_for(rec["metadata"]["patient_id"]) or {}
     cue_block = clues.contributing_factors_block(rec["transcript"], wearable.get("days"))
     ctx = _detection_context(rec)
+    # effort="low": this call alone was ~43s at the (implicit) default of
+    # "high" -- nearly the entire end-to-end latency. Tested low vs medium
+    # vs high on Elias: gap count 8/9/9, OSA insight found at all three.
+    # That's one trial per setting against inherently stochastic discovery
+    # (this doc's own note above: OSA fired 1-of-5 unprompted before clue
+    # elevation existed), not the same rigor as the original 25-encounter
+    # measurement -- if delivered gap quality/breadth regresses, raise this
+    # before anything else, and ideally re-run the full comparison this was
+    # measured against.
     response = client.messages.create(
         model=DISCOVER_MODEL,
         max_tokens=4000,
         system=DISCOVER_SYS + cue_block,
         thinking={"type": "adaptive"},
-        output_config={"format": {"type": "json_schema", "schema": DISCOVER_SCHEMA}},
+        output_config={
+            "format": {"type": "json_schema", "schema": DISCOVER_SCHEMA},
+            "effort": "low",
+        },
         messages=[{"role": "user", "content": ctx}],
     )
     text = next(b.text for b in response.content if b.type == "text")
