@@ -2,5 +2,6 @@ __pycache__/
 *.pyc
 .venv/
 venv/
-.env
+.env*
 smoke_test_*.py
+diagnose_*.py
