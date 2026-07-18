@@ -11,9 +11,12 @@ and would never be deployed; a short list handed over at the door is exactly the
 that already exists in care (the after-visit summary).
 
 **So the hard problem is not "call an LLM." It is *what survives*.** A visit generates
-~20 candidate concerns across ~90 utterances. Most get addressed by a good clinician
-without prompting. Everything below exists to deliver **3 questions that genuinely were
-not answered**, instead of 20 that mostly were.
+a handful of candidate concerns across ~90 utterances. Most get addressed by a good
+clinician without prompting. Everything below exists to deliver **the questions that
+genuinely were not answered**, instead of everything that was raised.
+
+Measured across all 25 encounters (see Eval): **6 proposed -> 4 after the conversation
+-> 3 delivered**, medians. The conversation itself closes 37% of candidates.
 
 ---
 
@@ -333,15 +336,39 @@ Runs headless over all 25 encounters. Metrics:
 
 | Metric | How | Why it matters |
 |---|---|---|
-| candidates proposed vs delivered | count | the headline: ~20 proposed -> 3 delivered |
+| candidates proposed vs delivered | count | the headline: 6 proposed -> 3 delivered (medians) |
 | **suppression accuracy** | for each suppressed candidate, does `resolved_by` actually contain a plan for that topic? spot-check a sample | proves suppression is real, not lossy |
-| **groundedness rate** | **deterministic** — verify each delivered question's evidence refs resolve to a real field/value | headline number, no judge noise |
-| questions / encounter | count | median 2–3, never >5 |
+| **groundedness rate** | **deterministic** — verify each delivered question's evidence refs resolve to a real field/value | no judge noise (but see the caveat below) |
+| questions / encounter | count | median 3, range 0–5 |
+
+**MEASURED, all 25 encounters** (`run_full`, ~6 min, ~75 Sonnet calls):
+
+| stage | median | range | total |
+|---|---|---|---|
+| proposed | 6 | 4–10 | 155 |
+| after resolve | 4 | 0–7 | 97 |
+| after buckets + budget | 4 | 0–7 | 95 |
+| **delivered — visit** | **2** | 0–3 | 56 |
+| **delivered — health maintenance** | **1** | 0–2 | 21 |
+| **delivered — total** | **3** | 0–5 | 77 |
+
+Where the reduction actually happens: **resolve closes 58 of 155 (37%)**, Gate B
+(groundedness) drops a further **18 of 95 (19%)**, and **Gate C barely fires — 97
+survivors to 95**, because the buckets rarely exceed K=3 + 2 in the first place. One
+encounter delivers nothing, and it is a genuine zero (every candidate resolved during
+the visit), not a failure. Invariant violations: 0.
 
 **The money chart: suppression ON vs OFF.** Same run, flip resolution tracking.
-OFF delivers ~20 questions per visit, most of them already answered during the visit —
-which is precisely the useless product. ON delivers 3.
+OFF delivers a median of 6 per visit, most already answered during the visit — which is
+precisely the useless product. ON delivers 3.
 Cheap, honest, within-run A/B; almost nobody at a hackathon ships one.
+
+**Caveat, state it before a judge does:** the OFF arm is not an independent measurement —
+it equals `proposed` at every encounter, because OFF simply skips `resolve()`. The
+ablation therefore measures the resolver only, and says nothing about Gates B and C.
+Likewise the 1.000 groundedness rate is near-tautological: Gate B is an LLM check that
+drops ungrounded candidates, and the deterministic rate then scores its survivors. It
+confirms the two agree; it is not independent evidence that the output is grounded.
 
 Groundedness is checkable **deterministically** because candidates carry structured
 evidence refs. That is the whole reason for the `evidence` field.
@@ -432,8 +459,8 @@ hypertension, so this question plausibly decides whether the treatment happens a
 3. **30s** — same engine, different patient: Julius. His cost concern survives as
    *partially addressed* — the doctor said "cheap generics" but never said what to do
    if the counter price is wrong, and that is exactly what failed him last time.
-4. **35s** — how: deterministic generators propose, resolution tracking suppresses,
-   every delivered question traces to a datum. 20 proposed, 3 delivered.
+4. **35s** — how: an LLM pass proposes over the record, resolution tracking suppresses,
+   every delivered question traces to a datum. 6 proposed, 3 delivered (medians over 25).
 5. **25s** — the eval: suppression ON vs OFF across 25 encounters, groundedness rate.
 6. **10s** — scale: same engine over a population -> "what did patients like me
    wish they'd asked."
