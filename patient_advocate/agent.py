@@ -12,7 +12,7 @@ def run_encounter(patient_id: str, speed: float = 8.0, client=None) -> dict:
     """Orchestrate one encounter end to end:
       Before: detect.run_all(rec) -> candidates
       During: stream.replay(transcript, speed) -> resolve.resolve() per utterance
-      After:  deliver.deliver(client, candidates, rec) -> delivered questions
+      After:  deliver.deliver(client, candidates, rec) -> {visit, health_maintenance}
 
     Returns a dict shaped for eval.py:
       {"patient_id", "candidates_proposed", "candidates_delivered",
@@ -27,7 +27,9 @@ def run_encounter(patient_id: str, speed: float = 8.0, client=None) -> dict:
         history.append(utterance)
         resolve.resolve(candidates, utterance, history)
 
-    delivered = deliver.deliver(client, candidates, rec)
+    out = deliver.deliver(client, candidates, rec)
+    delivered = out["visit"]
+    maintenance = out["health_maintenance"]
 
     return {
         "patient_id": patient_id,
@@ -35,4 +37,5 @@ def run_encounter(patient_id: str, speed: float = 8.0, client=None) -> dict:
         "candidates_delivered": len(delivered),
         "candidates": candidates,
         "delivered": delivered,
+        "health_maintenance": maintenance,
     }

@@ -47,18 +47,36 @@ def render_candidates(candidates: list[detect.Candidate], order: dict[str, int])
     return Panel(Group(*rows), title="open candidates", border_style="yellow")
 
 
-def render_delivered(items: list[deliver.DeliveredItem] | None) -> Panel:
+def render_delivered(
+    items: list[deliver.DeliveredItem] | None,
+    maintenance: list[deliver.DeliveredItem] | None = None,
+) -> Panel:
+    """Two sections. Visit questions come out of what happened today; health
+    maintenance is the PCP-scoped screening list, rendered separately so it
+    never competes with them for the top-K slots (and empty for specialist,
+    hospice, and SNF encounters)."""
     if items is None:
         return Panel(Text("...listening", style="dim"), title="delivered", border_style="green")
-    if not items:
+    if not items and not maintenance:
         return Panel(Text("nothing survived suppression", style="dim"), title="delivered", border_style="green")
+
     rows = []
     for it in items:
         rows.append(Text(f"* {it.question}", style="bold green"))
         if it.context:
             rows.append(Text(f"  {it.context}", style="dim green"))
         rows.append(Text(""))
-    return Panel(Group(*rows), title=f"delivered ({len(items)})", border_style="green")
+
+    if maintenance:
+        rows.append(Text("health maintenance", style="bold cyan"))
+        for it in maintenance:
+            rows.append(Text(f"* {it.question}", style="cyan"))
+            if it.context:
+                rows.append(Text(f"  {it.context}", style="dim cyan"))
+        rows.append(Text(""))
+
+    n = len(items) + len(maintenance or [])
+    return Panel(Group(*rows), title=f"delivered ({n})", border_style="green")
 
 
 def run_live(patient_id: str, speed: float = 8.0, client=None, console: Console | None = None) -> dict:
@@ -95,8 +113,10 @@ def run_live(patient_id: str, speed: float = 8.0, client=None, console: Console 
             layout["candidates"].update(render_candidates(candidates, order))
             live.refresh()
 
-        delivered = deliver.deliver(client, candidates, rec)
-        layout["delivered"].update(render_delivered(delivered))
+        out = deliver.deliver(client, candidates, rec)
+        delivered = out["visit"]
+        maintenance = out["health_maintenance"]
+        layout["delivered"].update(render_delivered(delivered, maintenance))
         live.refresh()
 
     return {
@@ -105,6 +125,7 @@ def run_live(patient_id: str, speed: float = 8.0, client=None, console: Console 
         "candidates_delivered": len(delivered),
         "candidates": candidates,
         "delivered": delivered,
+        "health_maintenance": maintenance,
     }
 
 

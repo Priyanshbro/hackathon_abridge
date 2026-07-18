@@ -195,9 +195,45 @@ def phrase(client, survivors: list[Candidate]) -> list[DeliveredItem]:
     return items
 
 
-def deliver(client, candidates: list[Candidate], rec: dict) -> list[DeliveredItem]:
+HEALTH_MAINTENANCE_BUDGET = 2
+
+# health maintenance is PCP scope. A psychiatrist is not going to action a
+# mammogram, so surfacing it at a specialist visit is noise.
+PRIMARY_CARE_KEYWORDS = (
+    "primary care", "family", "internal medicine", "general", "wellness",
+    "health center", "community health",
+)
+
+
+def is_primary_care(rec: dict) -> bool:
+    """Same care-context triple the scope routing uses: Encounter.class,
+    visit_title, serviceProvider. No Practitioner resource exists in the
+    bundle, so there is no specialty lookup -- this triple is the signal."""
+    if chart.encounter_class(rec) != "AMB":
+        return False
+    text = (chart.visit_title(rec) + " " + chart.service_provider(rec)).lower()
+    return any(k in text for k in PRIMARY_CARE_KEYWORDS)
+
+
+def split_buckets(candidates: list[Candidate], rec: dict) -> tuple[list[Candidate], list[Candidate]]:
+    """Visit questions vs health maintenance. Screening/preventive items are
+    a different category from questions arising out of what happened today,
+    and they must not compete with them for the K=3 budget -- they render as
+    their own shorter list. Suppressed entirely outside primary care."""
+    visit = [c for c in candidates if c.kind != "preventive"]
+    maintenance = [c for c in candidates if c.kind == "preventive"] if is_primary_care(rec) else []
+    return visit, maintenance
+
+
+def deliver(client, candidates: list[Candidate], rec: dict) -> dict:
+    """Returns two lists. `visit` is the top-K questions from today's
+    encounter; `health_maintenance` is the PCP-scoped screening list, capped
+    separately and empty for specialist/hospice/SNF encounters."""
     candidates = goals_of_care_guard(candidates, rec)
     survivors = filter_survivors(candidates)
     survivors = ground(client, survivors)
-    survivors = budget(survivors)
-    return phrase(client, survivors)
+
+    visit_c, maint_c = split_buckets(survivors, rec)
+    visit = phrase(client, budget(visit_c, K_BUDGET))
+    maintenance = phrase(client, budget(maint_c, HEALTH_MAINTENANCE_BUDGET))
+    return {"visit": visit, "health_maintenance": maintenance}

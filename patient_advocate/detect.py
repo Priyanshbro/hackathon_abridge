@@ -15,6 +15,15 @@ class Candidate:
     evidence: list[dict]  # [{source, field, value, date}] -- must be verifiable
     priority: float
     resolved_by: str | None = None  # utterance idx + span, set during the visit
+    verifiable_from_record: bool = True
+    # False when the claim depends on history this encounter does not contain
+    # -- prior screening, whether a lab was ever repeated. longitudinal_summary
+    # carries procedure COUNTS with no labels, so "never addressed" is
+    # unknowable. Ground-truth review: 17 of 52 high-severity gaps were marked
+    # "is there anything in history that can explain". These deliver as a
+    # QUESTION ("Am I up to date on my screening?"), never an assertion --
+    # honest about the uncertainty, and still the right ask even with a full
+    # chart, since real records are always incomplete.
     plan_verbs: tuple[str, ...] | None = None  # override resolve.py's default
     # clinical plan-verb list when "addressed" means something more specific
     # than start/order/refer -- e.g. cost_adherence_risk should pass
