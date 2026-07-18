@@ -450,10 +450,6 @@ INDEX_HTML = """<!doctype html>
       <option value="8" selected>8x (demo pace)</option>
       <option value="2">2x (slow)</option>
     </select>
-    <select id="cache-select">
-      <option value="true" selected>Cached (free, instant)</option>
-      <option value="false">Live detection (real, ~45s)</option>
-    </select>
     <button id="run-btn">Run visit</button>
   </div>
 </header>
@@ -484,7 +480,7 @@ INDEX_HTML = """<!doctype html>
     <div class="card" id="reasoning-card">
       <h2>Agent reasoning <span class="live-dot" id="reasoning-live"></span></h2>
       <div class="card-scroll" id="reasoning">
-        <div class="empty-note">Live model reasoning appears here during detection and grounding. Requires "Live detection" mode -- cached runs skip the model calls this streams from.</div>
+        <div class="empty-note">Live model reasoning appears here during grounding, and during detection for any patient whose chart hasn't been pre-warmed yet.</div>
       </div>
     </div>
   </div>
@@ -570,7 +566,6 @@ function appendReasoning(html) {
 function run() {
   const patientId = document.getElementById('patient-select').value;
   const speed = document.getElementById('speed-select').value;
-  const useCache = document.getElementById('cache-select').value;
   const btn = document.getElementById('run-btn');
   btn.disabled = true;
 
@@ -582,7 +577,7 @@ function run() {
   document.getElementById('reasoning-live').classList.add('active');
   thinkingEl = null;
 
-  const es = new EventSource(`/events?patient_id=${patientId}&speed=${speed}&use_cache=${useCache}`);
+  const es = new EventSource(`/events?patient_id=${patientId}&speed=${speed}`);
 
   es.onmessage = (e) => {
     const ev = JSON.parse(e.data);
@@ -681,7 +676,6 @@ class Handler(BaseHTTPRequestHandler):
             qs = parse_qs(parsed.query)
             patient_id = qs.get("patient_id", [DEFAULT_PATIENT])[0]
             speed = float(qs.get("speed", ["8"])[0])
-            use_cache = qs.get("use_cache", ["true"])[0] == "true"
 
             # protocol_version defaults to HTTP/1.0 on BaseHTTPRequestHandler
             # (never overridden here), which closes the connection when the
@@ -696,7 +690,7 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             try:
                 client = _client()
-                for event in run_encounter_events(patient_id, speed=speed, use_cache=use_cache, client=client):
+                for event in run_encounter_events(patient_id, speed=speed, client=client):
                     payload = f"data: {json.dumps(event)}\n\n"
                     self.wfile.write(payload.encode("utf-8"))
                     self.wfile.flush()
