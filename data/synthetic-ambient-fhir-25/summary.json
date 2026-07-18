@@ -1,0 +1,287 @@
+{
+ "name": "synthetic-ambient-fhir-25",
+ "records": 25,
+ "patients": 25,
+ "date_range": [
+  "2016-08-30",
+  "2026-06-18"
+ ],
+ "synthetic": true,
+ "index": [
+  {
+   "id": "3a3a1f26-ed23-f65c-a7df-c96fac56f464::3a3a1f26-ed23-f65c-e264-be689558faea",
+   "date": "2022-08-05",
+   "visit_title": "Annual physical \u2014 preventive screening and migraine check-in",
+   "visit_type": "General examination of patient (procedure)",
+   "gender": "male",
+   "birth_date": "1991-05-24",
+   "transcript_words": 1485,
+   "note_words": 555,
+   "fhir_resources": 30
+  },
+  {
+   "id": "7bd9e5b0-5d4b-f10d-9579-f4813faf9cdc::7bd9e5b0-5d4b-f10d-cb93-7fcf216727d8",
+   "date": "2021-01-03",
+   "visit_title": "Inpatient admission \u2014 COVID-19 isolation with pneumonia and hypoxemia",
+   "visit_type": "Hospital admission for isolation (procedure)",
+   "gender": "female",
+   "birth_date": "1940-05-16",
+   "transcript_words": 1441,
+   "note_words": 579,
+   "fhir_resources": 600
+  },
+  {
+   "id": "b342f27e-56bc-08ac-347c-323279c0d595::b342f27e-56bc-08ac-24f0-de401f6e3c47",
+   "date": "2025-06-01",
+   "visit_title": "Prenatal intake visit \u2014 initial obstetric evaluation",
+   "visit_type": "Prenatal initial visit (regime/therapy)",
+   "gender": "female",
+   "birth_date": "1993-05-09",
+   "transcript_words": 1413,
+   "note_words": 546,
+   "fhir_resources": 22
+  },
+  {
+   "id": "6b716621-5454-68ec-2017-362939ab6f36::6b716621-5454-68ec-7553-080856a4cfa2",
+   "date": "2017-01-01",
+   "visit_title": "Annual wellness examination \u2014 preventive screening and health maintenance",
+   "visit_type": "General examination of patient (procedure)",
+   "gender": "female",
+   "birth_date": "1970-12-13",
+   "transcript_words": 1336,
+   "note_words": 499,
+   "fhir_resources": 42
+  },
+  {
+   "id": "966e9818-9cf6-8d71-74bc-36aef6643618::966e9818-9cf6-8d71-3eff-a424a6faa0d3",
+   "date": "2025-05-23",
+   "visit_title": "Young adult preventive exam \u2014 prediabetes and allergy follow-up",
+   "visit_type": "General examination of patient (procedure)",
+   "gender": "female",
+   "birth_date": "2003-03-21",
+   "transcript_words": 1531,
+   "note_words": 572,
+   "fhir_resources": 57
+  },
+  {
+   "id": "374e68b2-ee15-0852-cd48-3c7b6fd8e114::374e68b2-ee15-0852-8f80-26e1007e6c00",
+   "date": "2024-05-18",
+   "visit_title": "Annual check-up \u2014 post-sepsis recovery and prediabetes",
+   "visit_type": "Encounter for check up (procedure)",
+   "gender": "male",
+   "birth_date": "1987-05-23",
+   "transcript_words": 1601,
+   "note_words": 546,
+   "fhir_resources": 34
+  },
+  {
+   "id": "4b4735a2-ee12-ec86-041f-3ba4d5c81ec9::4b4735a2-ee12-ec86-c1c9-c610cc6ef8ab",
+   "date": "2026-06-18",
+   "visit_title": "General adult exam \u2014 new hypertension and metabolic syndrome",
+   "visit_type": "General examination of patient (procedure)",
+   "gender": "male",
+   "birth_date": "1972-05-25",
+   "transcript_words": 1461,
+   "note_words": 535,
+   "fhir_resources": 42
+  },
+  {
+   "id": "1ba8eeb9-bc93-7129-4390-0d2ddd560616::1ba8eeb9-bc93-7129-2e7d-8c427e72b964",
+   "date": "2021-04-06",
+   "visit_title": "General exam \u2014 chronic low back pain and positive depression screen",
+   "visit_type": "General examination of patient (procedure)",
+   "gender": "male",
+   "birth_date": "1999-01-19",
+   "transcript_words": 1518,
+   "note_words": 514,
+   "fhir_resources": 31
+  },
+  {
+   "id": "73043f9e-3254-a1d3-aa45-b82f0fc6d502::73043f9e-3254-a1d3-ecbd-a0c16f2d8db0",
+   "date": "2016-08-30",
+   "visit_title": "Annual general exam \u2014 prediabetes, hyperlipidemia, and knee osteoarthritis",
+   "visit_type": "General examination of patient (procedure)",
+   "gender": "female",
+   "birth_date": "1954-06-22",
+   "transcript_words": 1411,
+   "note_words": 547,
+   "fhir_resources": 57
+  },
+  {
+   "id": "40cb7be2-9c26-6328-3aa0-71db4ed81e06::40cb7be2-9c26-6328-75bd-838e58c2583e",
+   "date": "2024-07-22",
+   "visit_title": "Prenatal intake visit \u2014 first trimester, newly identified anemia",
+   "visit_type": "Prenatal initial visit (regime/therapy)",
+   "gender": "female",
+   "birth_date": "1993-07-26",
+   "transcript_words": 1669,
+   "note_words": 551,
+   "fhir_resources": 23
+  },
+  {
+   "id": "74919836-2db2-2f73-d2cf-5287a180b0ff::74919836-2db2-2f73-ed42-440eccc6591a",
+   "date": "2024-10-07",
+   "visit_title": "Annual physical \u2014 geriatric cardiometabolic follow-up",
+   "visit_type": "General examination of patient (procedure)",
+   "gender": "male",
+   "birth_date": "1939-03-20",
+   "transcript_words": 1388,
+   "note_words": 645,
+   "fhir_resources": 50
+  },
+  {
+   "id": "be1b73f7-b0f0-0ca3-b24b-28369ce68943::be1b73f7-b0f0-0ca3-5c23-d051118e002b",
+   "date": "2019-07-14",
+   "visit_title": "Annual physical \u2014 new adult patient wellness exam",
+   "visit_type": "General examination of patient (procedure)",
+   "gender": "male",
+   "birth_date": "1988-05-01",
+   "transcript_words": 1302,
+   "note_words": 515,
+   "fhir_resources": 35
+  },
+  {
+   "id": "6d4fd363-1ddb-74f8-516f-2fdc861cb736::6d4fd363-1ddb-74f8-95dd-b53404f1e107",
+   "date": "2025-07-13",
+   "visit_title": "General exam \u2014 hypertension treatment initiation and chronic low back pain",
+   "visit_type": "General examination of patient (procedure)",
+   "gender": "male",
+   "birth_date": "1989-12-17",
+   "transcript_words": 1241,
+   "note_words": 552,
+   "fhir_resources": 27
+  },
+  {
+   "id": "256bea3d-7833-e7f8-74b4-0e4f7e299c73::256bea3d-7833-e7f8-1c5a-743d9ec18b07",
+   "date": "2020-06-17",
+   "visit_title": "Annual exam \u2014 psychosocial screening with safety disclosure",
+   "visit_type": "General examination of patient (procedure)",
+   "gender": "female",
+   "birth_date": "1972-05-24",
+   "transcript_words": 1364,
+   "note_words": 582,
+   "fhir_resources": 31
+  },
+  {
+   "id": "4c893b3e-df6f-a2f0-5d03-98714cbad61a::4c893b3e-df6f-a2f0-3e2d-587d1263ccd4",
+   "date": "2023-05-20",
+   "visit_title": "General adult exam \u2014 preventive screening and sleep review",
+   "visit_type": "General examination of patient (procedure)",
+   "gender": "male",
+   "birth_date": "1971-05-08",
+   "transcript_words": 1248,
+   "note_words": 558,
+   "fhir_resources": 45
+  },
+  {
+   "id": "1be66dc9-cf0b-cb78-e88e-ada9a9a5405b::1be66dc9-cf0b-cb78-ee14-c92f2fe041a4",
+   "date": "2019-11-20",
+   "visit_title": "Skilled nursing facility admission after hospitalization",
+   "visit_type": "Hospital admission (procedure)",
+   "gender": "female",
+   "birth_date": "1944-11-15",
+   "transcript_words": 1592,
+   "note_words": 568,
+   "fhir_resources": 86
+  },
+  {
+   "id": "c2cbc55e-34dc-73c6-5ee4-cabe0c40fc32::c2cbc55e-34dc-73c6-4d09-7d9c99b11de4",
+   "date": "2019-09-27",
+   "visit_title": "Initial prenatal visit \u2014 new pregnancy at 43",
+   "visit_type": "Prenatal initial visit (regime/therapy)",
+   "gender": "female",
+   "birth_date": "1976-08-20",
+   "transcript_words": 1520,
+   "note_words": 570,
+   "fhir_resources": 22
+  },
+  {
+   "id": "e1a7c2af-1e7f-300b-44f6-012ae75bbab1::e1a7c2af-1e7f-300b-bc8f-6bb66fcf2ddc",
+   "date": "2025-03-10",
+   "visit_title": "Dental referral visit \u2014 gingival disease treatment",
+   "visit_type": "Encounter for check up (procedure)",
+   "gender": "male",
+   "birth_date": "1990-12-10",
+   "transcript_words": 1505,
+   "note_words": 522,
+   "fhir_resources": 16
+  },
+  {
+   "id": "a3292ec4-64b6-20fc-480e-39e1f7f51e50::a3292ec4-64b6-20fc-55a4-b753a07a1881",
+   "date": "2026-03-21",
+   "visit_title": "Prenatal intake visit \u2014 first pregnancy with chronic pain",
+   "visit_type": "Prenatal initial visit (regime/therapy)",
+   "gender": "female",
+   "birth_date": "2005-10-22",
+   "transcript_words": 1571,
+   "note_words": 585,
+   "fhir_resources": 22
+  },
+  {
+   "id": "b504cdf2-e13b-979e-9c4a-95456823e3dd::b504cdf2-e13b-979e-4f0c-523d0948189e",
+   "date": "2023-11-27",
+   "visit_title": "SNF admission \u2014 rehabilitation and pain management",
+   "visit_type": "Hospital admission (procedure)",
+   "gender": "female",
+   "birth_date": "1947-11-02",
+   "transcript_words": 1565,
+   "note_words": 635,
+   "fhir_resources": 27
+  },
+  {
+   "id": "d57244c4-df7d-9ce7-7878-38361fc0087b::d57244c4-df7d-9ce7-c30b-92c6cf8c0859",
+   "date": "2019-04-22",
+   "visit_title": "Annual physical \u2014 prediabetes and psychosocial screening",
+   "visit_type": "General examination of patient (procedure)",
+   "gender": "male",
+   "birth_date": "1967-04-10",
+   "transcript_words": 1405,
+   "note_words": 583,
+   "fhir_resources": 50
+  },
+  {
+   "id": "25fb1227-d194-b15e-e099-7cffcd6081ec::25fb1227-d194-b15e-ecd8-6fcb9efd8141",
+   "date": "2022-05-18",
+   "visit_title": "Hospice admission \u2014 end-stage colon cancer",
+   "visit_type": "Admission to hospice (procedure)",
+   "gender": "female",
+   "birth_date": "1947-05-14",
+   "transcript_words": 1374,
+   "note_words": 631,
+   "fhir_resources": 46
+  },
+  {
+   "id": "693a049b-0fd5-c1af-a6ab-e31c329f2891::693a049b-0fd5-c1af-8dff-09e595625529",
+   "date": "2020-01-11",
+   "visit_title": "Hospice admission \u2014 advanced colon cancer with cardiac comorbidity",
+   "visit_type": "Admission to hospice (procedure)",
+   "gender": "male",
+   "birth_date": "1945-01-06",
+   "transcript_words": 1346,
+   "note_words": 618,
+   "fhir_resources": 50
+  },
+  {
+   "id": "5e93dd7e-1639-0886-8d0e-80ac11f2785c::5e93dd7e-1639-0886-70ab-27e7ee37e5a0",
+   "date": "2021-10-15",
+   "visit_title": "Skilled nursing facility admission \u2014 diabetes stabilization and rehabilitation",
+   "visit_type": "Hospital admission (procedure)",
+   "gender": "female",
+   "birth_date": "1956-10-12",
+   "transcript_words": 1380,
+   "note_words": 614,
+   "fhir_resources": 89
+  },
+  {
+   "id": "01573895-dbf5-29c6-4ef9-cd09aecc51f6::01573895-dbf5-29c6-f885-ade2bd6537a5",
+   "date": "2019-07-25",
+   "visit_title": "Annual physical \u2014 hand osteoarthritis and anxiety screening",
+   "visit_type": "General examination of patient (procedure)",
+   "gender": "male",
+   "birth_date": "1977-07-14",
+   "transcript_words": 1484,
+   "note_words": 607,
+   "fhir_resources": 37
+  }
+ ]
+}

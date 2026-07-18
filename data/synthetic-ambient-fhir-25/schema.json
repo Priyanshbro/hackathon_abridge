@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abridge.com/schemas/synthetic-ambient-fhir-encounter-v1.json",
+  "title": "Synthetic Ambient FHIR Encounter",
+  "type": "object",
+  "required": [
+    "id",
+    "metadata",
+    "patient_context",
+    "encounter_fhir",
+    "transcript",
+    "note",
+    "after_visit_summary",
+    "after_visit_summary_provenance"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "patient_context": {
+      "type": "object"
+    },
+    "encounter_fhir": {
+      "type": "object"
+    },
+    "transcript": {
+      "type": "string"
+    },
+    "note": {
+      "type": "string"
+    },
+    "after_visit_summary": {
+      "type": "string"
+    },
+    "after_visit_summary_provenance": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}
