@@ -119,7 +119,54 @@ class Candidate:
     evidence: list[dict]  # [{source, field, value, date}]  <- must be verifiable
     priority: float
     resolved_by: str|None # utterance idx + span, set during the visit
+    verifiable_from_record: bool   # False -> deliver as a QUESTION, never an assertion
+    bucket: str           # visit | health_maintenance
 ```
+
+### `verifiable_from_record` — the largest finding from the ground-truth review
+
+Reviewer marked all 52 high-severity LLM gaps: **28 confirmed valuable, 24
+maybe, 0 rejected as wrong.** No hallucinated gaps. But the 24 decompose:
+
+| Reviewer note | n | What it is |
+|---|---|---|
+| "is there anything in history that can explain" | **17** | unverifiable from one encounter |
+| "low value" | 6 | real, but not worth asking — Gate C's job |
+| "risk vs benefit in 80Y" | 1 | clinical judgment |
+
+The 17 are structural: the model asserts *not addressed* when it can only see this
+encounter. `longitudinal_summary` gives `Procedure: 45` as a **count with no labels**,
+so prior screening is invisible. Shipping that tells patients they are overdue for
+things they had done last year — the failure Abridge clinicians will spot fastest.
+
+**Do not drop them — reframe them.** An unverifiable gap becomes a question, not a claim:
+
+> ~~"You are overdue for cervical cancer screening."~~
+> **"Am I up to date on my cervical cancer screening?"**
+
+That is a genuinely good patient question *because* neither patient nor agent can check,
+but the clinician has the chart open. Honest about the uncertainty, still surfaces it.
+
+### `bucket` — visit vs health maintenance
+
+Screening and preventive items are a different category from questions arising out of
+what happened today, and they are **PCP scope**. Two consequences:
+
+- **Suppress `health_maintenance` entirely** when the encounter is not primary care —
+  specialist visits (psychiatry), hospice, SNF. Uses the same care-context triple as
+  scope routing.
+- **Separate budget.** Health maintenance must not compete with visit questions for
+  `K = 3`. Render as its own shorter list (max 2), below the visit questions.
+
+### Decided against: synthesising longitudinal history
+
+Tempting fix for the 17, but rejected. Authoring the screening history *and* the
+detector that reads it is circular — we would decide the answer, then "discover" it
+(the same trap as authoring the 271 benefit lines that `coverage_awareness` reads).
+Synthea would give genuine history, but those patients have no transcripts, so they
+cannot be demo cases. And the verification-question reframe is **better product
+behaviour even with a full record**: real charts are incomplete (care elsewhere,
+outside imaging), so "am I up to date?" stays the right ask. ~45-60 min saved.
 
 Generators (each 10–20 lines; do not gold-plate):
 
@@ -222,6 +269,10 @@ LLM call. **No extra calls.**
 | in scope | ask now | thiazide/glucose, lipid panel, missing CBC, duplicate HCTZ, HTN intensity |
 | warrants referral | ask for a referral | OSA -> sleep specialist |
 | barrier | ask about access | Julius's pharmacy cost |
+| unverifiable | ask to confirm | "Am I up to date on my screening?" |
+
+Delivered output is **two lists**: visit questions (`K = 3`) and, only when the
+encounter is primary care, health maintenance (max 2).
 
 **Do not over-refer.** Scope is not binary — PCPs routinely order home sleep apnea
 tests. Default to in-scope; route to referral only when the gap genuinely needs
