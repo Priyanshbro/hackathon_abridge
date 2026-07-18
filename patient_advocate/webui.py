@@ -324,39 +324,7 @@ INDEX_HTML = """<!doctype html>
   .line .text { color: var(--text); }
   .line.PT .text, .line.FAMILY .text { color: var(--text); }
 
-  #candidates-card { flex: 1; }
-  .candidate {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 9px 0;
-    border-bottom: 1px solid var(--border);
-    transition: opacity 0.4s ease;
-  }
-  .candidate:last-child { border-bottom: none; }
-  .candidate .dot {
-    width: 9px; height: 9px; border-radius: 50%;
-    margin-top: 5px; flex-shrink: 0;
-    background: var(--accent);
-  }
-  .candidate.resolved .dot { background: var(--resolved); }
-  .candidate .topic {
-    font-size: 13.5px;
-    color: var(--text);
-  }
-  .candidate.resolved .topic {
-    color: var(--text-muted);
-    text-decoration: line-through;
-  }
-  .candidate .priority {
-    margin-left: auto;
-    font-size: 11px;
-    color: var(--text-muted);
-    white-space: nowrap;
-    padding-top: 1px;
-  }
-
-  #delivered-card { flex: 1.3; }
+  #delivered-card { flex: 1; }
   .section-label {
     font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
     color: var(--text-muted); font-weight: 600;
@@ -465,10 +433,6 @@ INDEX_HTML = """<!doctype html>
     </div>
   </div>
   <div class="col">
-    <div class="card" id="candidates-card">
-      <h2>Open candidates</h2>
-      <div class="card-scroll" id="candidates"></div>
-    </div>
     <div class="card" id="delivered-card">
       <h2>Delivered</h2>
       <div class="card-scroll" id="delivered">
@@ -480,27 +444,13 @@ INDEX_HTML = """<!doctype html>
     <div class="card" id="reasoning-card">
       <h2>Agent reasoning <span class="live-dot" id="reasoning-live"></span></h2>
       <div class="card-scroll" id="reasoning">
-        <div class="empty-note">Live model reasoning appears here during grounding, and during detection for any patient whose chart hasn't been pre-warmed yet.</div>
+        <div class="empty-note">Live model reasoning appears here during detection (including chart-cached findings replayed from page load) and grounding.</div>
       </div>
     </div>
   </div>
 </main>
 
 <script>
-let order = {};
-
-function renderCandidates(list) {
-  const el = document.getElementById('candidates');
-  const sorted = [...list].sort((a, b) => (order[a.id] ?? 0) - (order[b.id] ?? 0));
-  el.innerHTML = sorted.map(c => `
-    <div class="candidate ${c.resolved ? 'resolved' : ''}">
-      <div class="dot"></div>
-      <div class="topic">${c.topic.split('|')[0]}</div>
-      ${c.resolved ? '' : `<div class="priority">p=${c.priority.toFixed(2)}</div>`}
-    </div>
-  `).join('');
-}
-
 function renderDelivered(visit, maintenance) {
   const el = document.getElementById('delivered');
   if (!visit.length && !maintenance.length) {
@@ -570,7 +520,6 @@ function run() {
   btn.disabled = true;
 
   document.getElementById('transcript').innerHTML = '';
-  document.getElementById('candidates').innerHTML = '';
   document.getElementById('delivered').innerHTML = '<div class="empty-note">Running...</div>';
   document.getElementById('reasoning').innerHTML = '';
   document.getElementById('status').textContent = '';
@@ -584,13 +533,10 @@ function run() {
     if (ev.type === 'status') {
       document.getElementById('status').textContent = ev.message;
     } else if (ev.type === 'init') {
-      order = ev.order;
       document.getElementById('visit-title').textContent = ev.visit_title;
       document.getElementById('status').textContent = '';
-      renderCandidates(ev.candidates);
     } else if (ev.type === 'utterance') {
       appendLine(ev.speaker, ev.text);
-      renderCandidates(ev.candidates);
     } else if (ev.type === 'delivered') {
       renderDelivered(ev.visit, ev.health_maintenance);
     } else if (ev.type === 'thinking') {

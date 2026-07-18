@@ -465,13 +465,30 @@ def run_all(rec: dict, client=None, use_cache: bool = True, on_event=None) -> li
     control) can run at zero cost with client=None -- checking `client` first
     would make those paths see only the deterministic generators and report
     an empty candidate set.
+
+    on_event, if given, gets a "candidate_found" for every candidate this
+    returns, not just freshly-discovered ones -- deterministic-generator and
+    cache-hit candidates are both real findings a demo viewer should see, and
+    since a prewarmed patient never reaches discover() at all, skipping them
+    here would make the reasoning feed look empty for exactly the patients
+    the pre-visit caching was built to make instant.
     """
+
+    def _emit_found(candidates: list[Candidate]) -> None:
+        if not on_event:
+            return
+        for c in candidates:
+            on_event({"type": "candidate_found", "id": c.id, "kind": c.kind, "trigger": c.trigger, "priority": c.priority})
+
     out = [c for gen in GENERATORS for c in [gen(rec)] if c is not None]
+    _emit_found(out)
 
     pid = rec["metadata"]["patient_id"]
     cache = _cache_load() if use_cache else {}
     if pid in cache:
-        out.extend(_from_cache(c) for c in cache[pid])
+        cached = [_from_cache(c) for c in cache[pid]]
+        _emit_found(cached)
+        out.extend(cached)
         return out
     if client is None:
         return out
