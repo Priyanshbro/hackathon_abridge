@@ -415,7 +415,7 @@ INDEX_HTML = """<!doctype html>
     </select>
     <select id="speed-select">
       <option value="1000000">Instant</option>
-      <option value="8" selected>8x (demo pace)</option>
+      <option value="32" selected>32x (demo pace)</option>
       <option value="2">2x (slow)</option>
     </select>
     <button id="run-btn">Run visit</button>
