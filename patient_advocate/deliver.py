@@ -7,6 +7,10 @@ import chart
 from detect import Candidate
 
 MODEL = "claude-sonnet-5"
+# Phrasing is templated rewriting against a fixed schema, not a judgment
+# call -- Gate B already did the hard reasoning. Haiku is faster and
+# cheaper here with no quality loss for the task shape.
+PHRASE_MODEL = "claude-haiku-4-5"
 K_BUDGET = 3
 
 # Hospice and SNF are NOT the same context and must not share a guard.
@@ -139,9 +143,17 @@ def ground(client, survivors: list[Candidate]) -> list[Candidate]:
         temperature=1,
         # adaptive, not disabled -- this is a borderline judgment call
         # (does the evidence really support the trigger), and disabled
-        # thinking produced run-to-run flip-flops on close cases
+        # thinking produced run-to-run flip-flops on close cases.
+        # effort="low" caps how long that deliberation runs for latency --
+        # Sonnet 5 has no budget_tokens (removed on this model family, 400s
+        # if sent), so effort is the only depth lever available. This is a
+        # real tradeoff against the flip-flop fix: if grounding inconsistency
+        # reappears, raise effort before reaching for anything else.
         thinking={"type": "adaptive"},
-        output_config={"format": {"type": "json_schema", "schema": GROUND_SCHEMA}},
+        output_config={
+            "format": {"type": "json_schema", "schema": GROUND_SCHEMA},
+            "effort": "low",
+        },
         messages=[{"role": "user", "content": prompt}],
     )
     text = next(b.text for b in response.content if b.type == "text")
@@ -182,7 +194,7 @@ def phrase(client, survivors: list[Candidate]) -> list[DeliveredItem]:
         f"{json.dumps(payload, indent=2)}"
     )
     response = client.messages.create(
-        model=MODEL,
+        model=PHRASE_MODEL,
         max_tokens=1536,
         temperature=1,
         thinking={"type": "disabled"},
@@ -308,6 +320,14 @@ def deliver(client, candidates: list[Candidate], rec: dict) -> dict:
     survivors = ground(client, survivors)
 
     visit_c, maint_c = split_buckets(survivors, rec)
-    visit = phrase(client, budget(visit_c, K_BUDGET))
-    maintenance = phrase(client, budget(maint_c, HEALTH_MAINTENANCE_BUDGET))
+    visit_budgeted = budget(visit_c, K_BUDGET)
+    maint_budgeted = budget(maint_c, HEALTH_MAINTENANCE_BUDGET)
+
+    # one phrase() call for both buckets, not two -- which of the two lists
+    # an id came from is already known locally, no need for the model to
+    # tell us
+    all_items = phrase(client, visit_budgeted + maint_budgeted)
+    visit_ids = {c.id for c in visit_budgeted}
+    visit = [it for it in all_items if it.id in visit_ids]
+    maintenance = [it for it in all_items if it.id not in visit_ids]
     return {"visit": visit, "health_maintenance": maintenance}
