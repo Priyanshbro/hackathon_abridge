@@ -30,6 +30,13 @@ class Candidate:
     # QUESTION ("Am I up to date on my screening?"), never an assertion --
     # honest about the uncertainty, and still the right ask even with a full
     # chart, since real records are always incomplete.
+    base_priority: float | None = None
+    # priority BEFORE any conversational decay. `priority` is multiplied by
+    # PARTIAL_DECAY on each clinician mention, so a high-severity item raised
+    # once lands exactly on a low-severity item never raised (0.9*0.5 vs 0.3
+    # is close; 0.6*0.5 == 0.3 exactly). deliver.budget() breaks those ties on
+    # this field so a serious concern that got discussed still outranks a
+    # minor one that did not -- previously the tie fell to list order.
     plan_verbs: tuple[str, ...] | None = None  # override resolve.py's default
     # clinical plan-verb list when "addressed" means something more specific
     # than start/order/refer -- e.g. cost_adherence_risk should pass
@@ -106,6 +113,7 @@ def coverage_awareness(rec: dict) -> Candidate | None:
                 trigger=f"active condition ({label}) maps to {specialist}, never discussed",
                 evidence=evidence,
                 priority=0.5,
+                base_priority=0.5,
             )
     return None
 
@@ -151,6 +159,10 @@ GAP_TYPES = [
     "cancer_screening_gap",
     "prenatal_supplementation_gap",
     "depression_screening_gap",
+    # vaccines had no type of their own, so they landed in the nearest bucket:
+    # "should I also get the pneumococcal and shingles vaccines?" was filed as
+    # cancer_screening_gap.
+    "immunization_gap",
     "social_barrier_to_plan",
     "cost_adherence_risk",
     "specialist_referral_gap",
@@ -162,6 +174,7 @@ PREVENTIVE_TYPES = {
     "cancer_screening_gap",
     "depression_screening_gap",
     "prenatal_supplementation_gap",
+    "immunization_gap",
 }
 
 DISCOVER_SYS = """You are reviewing one primary-care encounter for CARE GAPS:
@@ -177,7 +190,14 @@ cause, a social or practical barrier that will stop the plan from happening.
 
 Set verifiable_from_record=false when your claim depends on history this single
 encounter does not contain -- prior screening, whether a lab was ever repeated.
-Those are delivered to the patient as a question, not an assertion."""
+Those are delivered to the patient as a question, not an assertion.
+
+CITE WHAT YOU USED. Every gap needs a citations array pointing at the specific
+data you relied on, not a paraphrase of it. For a lab or vital, give the
+observation name and its exact value. For something said in the room, quote the
+speaker's own words. A downstream check verifies each gap against its citations
+and DROPS gaps whose citations do not contain the fact the finding claims -- so
+if your finding names a number, a citation must carry that number."""
 
 DISCOVER_SCHEMA = {
     "type": "object",
@@ -190,6 +210,39 @@ DISCOVER_SCHEMA = {
                     "type": {"type": "string", "enum": GAP_TYPES},
                     "finding": {"type": "string"},
                     "evidence": {"type": "string"},
+                    # Structured citations, added because Gate B could not
+                    # verify anything without them: every LLM candidate used
+                    # to carry ONE prose evidence item, so the gate could only
+                    # check that the prose sounded specific. It dropped a real
+                    # platelet finding (436.75, a genuine Observation in the
+                    # record) because the candidate paraphrased the transcript
+                    # instead of citing the value the finding named.
+                    "citations": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "source": {
+                                    "type": "string",
+                                    "enum": ["observation", "condition", "medication",
+                                             "transcript", "coverage", "longitudinal_summary"],
+                                },
+                                "field": {
+                                    "type": "string",
+                                    "description": "Observation/condition/medication name, or "
+                                    "the speaker (DR/PT/NURSE) for a transcript quote.",
+                                },
+                                "value": {
+                                    "type": "string",
+                                    "description": "The exact value or verbatim quote. Never a "
+                                    "paraphrase. If the finding names a number, put that number here.",
+                                },
+                            },
+                            "required": ["source", "field", "value"],
+                            "additionalProperties": False,
+                        },
+                    },
                     "severity": {"type": "string", "enum": ["high", "moderate", "low"]},
                     "topic": {
                         "type": "string",
@@ -199,7 +252,7 @@ DISCOVER_SCHEMA = {
                     "verifiable_from_record": {"type": "boolean"},
                 },
                 "required": [
-                    "type", "finding", "evidence", "severity", "topic",
+                    "type", "finding", "evidence", "citations", "severity", "topic",
                     "verifiable_from_record",
                 ],
                 "additionalProperties": False,
@@ -260,7 +313,12 @@ def discover(rec: dict, client) -> list[Candidate]:
     # measured against.
     response = client.messages.create(
         model=DISCOVER_MODEL,
-        max_tokens=4000,
+        # 4000 truncated mid-JSON once citations became required: each gap now
+        # carries 1-3 {source, field, value} objects with verbatim quotes, and
+        # a 6-candidate encounter blew the limit on the FIRST record. A
+        # truncated response is not a soft failure -- json.loads raises and the
+        # whole encounter is lost.
+        max_tokens=8000,
         system=DISCOVER_SYS + cue_block,
         thinking={"type": "adaptive"},
         output_config={
@@ -278,8 +336,13 @@ def discover(rec: dict, client) -> list[Candidate]:
                 topic=g["topic"],
                 kind="preventive" if g["type"] in PREVENTIVE_TYPES else "gap",
                 trigger=g["finding"],
-                evidence=[{"source": "llm_discovery", "field": g["type"], "value": g["evidence"]}],
+                # citations first -- Gate B reads the evidence array in order,
+                # and the chart-grounded items are what it can actually verify.
+                # The prose summary is kept last for the phrasing call's context.
+                evidence=g["citations"]
+                + [{"source": "llm_discovery", "field": g["type"], "value": g["evidence"]}],
                 priority=_SEVERITY_PRIORITY.get(g["severity"], 0.5),
+                base_priority=_SEVERITY_PRIORITY.get(g["severity"], 0.5),
                 verifiable_from_record=g["verifiable_from_record"],
                 plan_verbs=BARRIER_PLAN_VERBS if g["type"] in BARRIER_TYPES else None,
             )

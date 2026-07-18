@@ -162,8 +162,24 @@ def ground(client, survivors: list[Candidate]) -> list[Candidate]:
 
 
 def budget(survivors: list[Candidate], k: int = K_BUDGET) -> list[Candidate]:
-    """Gate C: hard cap at k, strict priority ordering."""
-    return sorted(survivors, key=lambda c: c.priority, reverse=True)[:k]
+    """Gate C: hard cap at k, strict priority ordering.
+
+    Ties break on BASE severity, then id. Live priority is base severity times
+    a decay applied once per clinician mention, so two candidates of different
+    original severity land on the same number routinely (0.30 undecayed ties
+    0.60-decayed-once). `sorted` is stable, so those ties were being broken by
+    list order -- i.e. by the detector's output sequence, which is arbitrary.
+    That is not acceptable at the K boundary, where a tie decides whether a
+    real question reaches the patient: a recurrent-UTI candidate lost its slot
+    to an exactly-equal chest-symptom candidate purely on position.
+
+    Preferring higher base severity means a serious concern that was discussed
+    once still outranks a minor one that was never raised."""
+    return sorted(
+        survivors,
+        key=lambda c: (c.priority, c.base_priority or c.priority, c.id),
+        reverse=True,
+    )[:k]
 
 
 def phrase(client, survivors: list[Candidate]) -> list[DeliveredItem]:
@@ -194,6 +210,15 @@ def phrase(client, survivors: list[Candidate]) -> list[DeliveredItem]:
         "- scope: 'in_scope' if the clinician in front of the patient can "
         "act on this directly, 'referral' if it genuinely needs a "
         "specialist, 'barrier' if it is a cost/access/social obstacle.\n"
+        "MENTAL-HEALTH ITEMS: never have the patient request a screening "
+        "instrument. No patient asks 'can we do a PHQ-9' or 'should I "
+        "complete a depression questionnaire' -- that is the clinic's "
+        "language, and this is the patient's question. Ask instead what "
+        "SUPPORT OR RESOURCES they should be considering, anchored to what "
+        "they actually said about their own life: 'I've been struggling "
+        "since my sister died -- what mental health support should we be "
+        "thinking about?' Concrete about the next step, never a vague "
+        "'should we look at this'. The clinician picks the instrument.\n"
         "- context: an optional one-line patient-facing note, only when the "
         "evidence includes a coverage_271 entry (copay, payer, referral "
         "requirement) -- state it plainly for the patient's own reference. "
