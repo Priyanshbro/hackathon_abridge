@@ -1,7 +1,11 @@
 from __future__ import annotations
+import json
 from dataclasses import dataclass
 
 import chart
+import clues
+
+DISCOVER_MODEL = "claude-opus-4-8"
 
 
 @dataclass
@@ -134,15 +138,169 @@ def cost_adherence_risk(rec: dict) -> Candidate | None:
     raise NotImplementedError
 
 
+# transcript_clue and wearable_delta are deliberately ABSENT. They became
+# prompt inputs (clues.py), not generators -- Python finds the cue, the model
+# does the abductive reasoning. See clues.py for the measurement.
 GENERATORS = [
     bp_control,
     a1c_threshold,
-    wearable_delta,
-    transcript_clue,
     cost_adherence_risk,
     coverage_awareness,
 ]
 
+# The LLM classifies into this fixed vocabulary. Unconstrained, it produced 185
+# distinct type names for 198 gaps ("abnormal_finding_not_addressed",
+# "abnormal_lab_followup", "abnormal_creatinine_not_addressed" = one concept,
+# three labels), which breaks dedup, aggregation and the eval.
+GAP_TYPES = [
+    "medication_condition_conflict",
+    "duplicate_prescription",
+    "inappropriate_medication_elderly",
+    "missing_diagnostic_workup",
+    "unmonitored_condition",
+    "uninvestigated_symptom",
+    "abnormal_result_not_addressed",
+    "undertreated_condition",
+    "no_end_organ_assessment",
+    "cancer_screening_gap",
+    "prenatal_supplementation_gap",
+    "depression_screening_gap",
+    "social_barrier_to_plan",
+    "cost_adherence_risk",
+    "specialist_referral_gap",
+]
 
-def run_all(rec: dict) -> list[Candidate]:
-    return [c for gen in GENERATORS for c in [gen(rec)] if c is not None]
+# types that are screening/preventive -> kind='preventive', which drives both
+# the goals-of-care guard and the health-maintenance bucket in deliver.py
+PREVENTIVE_TYPES = {
+    "cancer_screening_gap",
+    "depression_screening_gap",
+    "prenatal_supplementation_gap",
+}
+
+DISCOVER_SYS = """You are reviewing one primary-care encounter for CARE GAPS:
+clinically meaningful things that were missed, not done, or not followed up.
+
+Report a gap only if you can point to specific evidence in the record provided.
+Do NOT compute or estimate lab values, risk scores, or thresholds you were not
+given -- those are handled deterministically elsewhere.
+
+Include gaps a standard quality-measure checklist would MISS: an abnormal result
+never followed up, a medication-condition conflict, an un-investigated likely
+cause, a social or practical barrier that will stop the plan from happening.
+
+Set verifiable_from_record=false when your claim depends on history this single
+encounter does not contain -- prior screening, whether a lab was ever repeated.
+Those are delivered to the patient as a question, not an assertion."""
+
+DISCOVER_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "gaps": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {"type": "string", "enum": GAP_TYPES},
+                    "finding": {"type": "string"},
+                    "evidence": {"type": "string"},
+                    "severity": {"type": "string", "enum": ["high", "moderate", "low"]},
+                    "topic": {
+                        "type": "string",
+                        "description": "'|'-delimited keywords for resolution matching, "
+                        "e.g. 'sleep|apnea|snoring'. Specific, not generic.",
+                    },
+                    "verifiable_from_record": {"type": "boolean"},
+                },
+                "required": [
+                    "type", "finding", "evidence", "severity", "topic",
+                    "verifiable_from_record",
+                ],
+                "additionalProperties": False,
+            },
+        }
+    },
+    "required": ["gaps"],
+    "additionalProperties": False,
+}
+
+_SEVERITY_PRIORITY = {"high": 0.9, "moderate": 0.6, "low": 0.3}
+
+
+def discover(rec: dict, client) -> list[Candidate]:
+    """LLM-primary detection -- the breadth layer, and where the demo's best
+    findings come from. Measured against the deterministic rules on all 25
+    encounters: 198 gaps vs 45, zero encounters with nothing found vs three,
+    and zero rejected as wrong in hand review.
+
+    Clue elevation (clues.py) is appended to the prompt: deterministic
+    extraction of the patient's own words and wearable deltas. Without it the
+    OSA insight on Elias fired in 1 of 5 runs; with it, 2 of 2."""
+    wearable = chart.wearable_for(rec["metadata"]["patient_id"]) or {}
+    cue_block = clues.contributing_factors_block(rec["transcript"], wearable.get("days"))
+    ctx = _detection_context(rec)
+    response = client.messages.create(
+        model=DISCOVER_MODEL,
+        max_tokens=4000,
+        system=DISCOVER_SYS + cue_block,
+        thinking={"type": "adaptive"},
+        output_config={"format": {"type": "json_schema", "schema": DISCOVER_SCHEMA}},
+        messages=[{"role": "user", "content": ctx}],
+    )
+    text = next(b.text for b in response.content if b.type == "text")
+    out = []
+    for i, g in enumerate(json.loads(text)["gaps"]):
+        out.append(
+            Candidate(
+                id=f"llm-{i}-{g['type']}",
+                topic=g["topic"],
+                kind="preventive" if g["type"] in PREVENTIVE_TYPES else "gap",
+                trigger=g["finding"],
+                evidence=[{"source": "llm_discovery", "field": g["type"], "value": g["evidence"]}],
+                priority=_SEVERITY_PRIORITY.get(g["severity"], 0.5),
+                verifiable_from_record=g["verifiable_from_record"],
+            )
+        )
+    return out
+
+
+def _detection_context(rec: dict) -> str:
+    """Everything the model needs, in one payload. The whole record fits
+    comfortably -- roughly 8-15k tokens against a 1M window -- so there is
+    nothing to retrieve."""
+    obs = []
+    for o in chart.observations(rec):
+        code = o.get("code", {})
+        name = code.get("text") or (code.get("coding") or [{}])[0].get("display", "")
+        if "valueQuantity" in o:
+            v = o["valueQuantity"]
+            obs.append(f"  {name} = {v.get('value')} {v.get('unit', '')}".rstrip())
+        for comp in o.get("component", []):
+            cn = (comp.get("code", {}).get("coding") or [{}])[0].get("display", "")
+            if "valueQuantity" in comp:
+                obs.append(f"  {cn} = {comp['valueQuantity'].get('value')}")
+    new_rx = []
+    for m in chart.medication_requests(rec):
+        mc = m.get("medicationCodeableConcept", {})
+        new_rx.append(mc.get("text") or (mc.get("coding") or [{}])[0].get("display", ""))
+    return (
+        f"ENCOUNTER: {chart.visit_title(rec)} ({chart.encounter_class(rec)}) "
+        f"at {chart.service_provider(rec)}\n"
+        f"ACTIVE CONDITIONS: {', '.join(chart.condition_labels(rec))}\n"
+        f"CURRENT MEDICATIONS: {', '.join(chart.medication_labels(rec)) or 'none listed'}\n"
+        f"PRESCRIBED AT THIS VISIT: {', '.join(x for x in new_rx if x) or 'none'}\n\n"
+        f"OBSERVATIONS THIS VISIT:\n" + "\n".join(obs) + "\n\n"
+        f"CLINICAL NOTE:\n{rec['note']}\n\n"
+        f"CONVERSATION TRANSCRIPT:\n{rec['transcript']}"
+    )
+
+
+def run_all(rec: dict, client=None) -> list[Candidate]:
+    """Deterministic generators always; LLM discovery when a client is given.
+    The LLM is the primary detector -- the generators cover exact computation
+    and anchor the taxonomy. Without a client this returns the deterministic
+    subset only, which is what the no-cost eval ablation uses."""
+    out = [c for gen in GENERATORS for c in [gen(rec)] if c is not None]
+    if client is not None:
+        out.extend(discover(rec, client))
+    return out
