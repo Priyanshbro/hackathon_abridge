@@ -49,11 +49,22 @@ def resolve(candidates: list[Candidate], utterance: Utterance, history: list[Utt
       covers same-utterance plans ("blood pressure recheck") and split ones
       (diagnosis named one turn, referral stated the next).
 
-    partially addressed: the topic is mentioned in the current utterance
-      (any speaker) but the addressed test above didn't pass -- priority
-      decays but the candidate stays open. This is Julius's reassurance
-      case: "these are all cheap generics" mentions cost but is not a
-      contingency plan, so it must not resolve the candidate.
+    partially addressed: a CLINICIAN mentions the topic in the current
+      utterance but the addressed test above didn't pass -- priority decays
+      but the candidate stays open. This is Julius's reassurance case:
+      "these are all cheap generics" mentions cost but is not a contingency
+      plan, so it must not resolve the candidate.
+
+      Decay requires a clinician for the same reason resolution does: only
+      the care team can address a concern. This was previously any speaker,
+      and 24% of all decay events (34 of 141 across the cohort) came from the
+      patient or family. That inverts the product -- a patient restating a
+      symptom is evidence the concern is LIVE, not that it was handled.
+      It killed the hero case: Elias's OSA candidate carries "sofa bed" as a
+      topic keyword (the same phrase clues.py elevates to raise OSA
+      suspicion), so his three mentions of the sofa bed decayed it
+      0.60 -> 0.075 and the K=3 budget cut it. The clue that should surface
+      the question was burying it.
 
     untouched: no match, no change.
     """
@@ -76,5 +87,5 @@ def resolve(candidates: list[Candidate], utterance: Utterance, history: list[Utt
         if has_plan_verb and topic_recent:
             c.resolved_by = f"{utterance.idx}: {utterance.text}"
             c.priority = 0.0
-        elif topic_now:
+        elif topic_now and is_clinician:
             c.priority *= PARTIAL_DECAY
